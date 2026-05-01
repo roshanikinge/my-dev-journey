@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Day 27: JS Events</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .box { width: 200px; height: 200px; background: lightcoral; margin: 20px; text-align: center; line-height: 200px; cursor: pointer; }
+        input, button, select { margin: 10px; padding: 5px; }
+        .key-demo { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <h1>Event Handling Demo</h1>
+
+    <div class="box" id="clickBox">Click me</div>
+    <p id="clickStatus">No click yet</p>
+
+    <input type="text" id="textInput" placeholder="Type something">
+    <p id="inputStatus">Key events will appear here</p>
+
+    <form id="myForm">
+        <input type="text" name="username" placeholder="Username">
+        <button type="submit">Submit</button>
+    </form>
+
+    <select id="colorSelect">
+        <option value="red">Red</option>
+        <option value="green">Green</option>
+        <option value="blue">Blue</option>
+    </select>
+    <div id="colorBox" style="width:100px; height:100px; background:gray; margin:10px;"></div>
+
+    <button id="removeBtn">Remove event listener example</button>
+
+    <script>
+        // EVENT Day 27: JS Events
+
+        console.log("1. CLICK EVENT");
+        let box = document.getElementById("clickBox");
+        function handleClick() {
+            document.getElementById("clickStatus").innerText = "Box clicked at " + new Date().toLocaleTimeString();
+            console.log("Box clicked");
+        }
+        box.addEventListener("click", handleClick);
+
+        console.log("2. DOUBLE CLICK EVENT");
+        box.addEventListener("dblclick", function() {
+            alert("Double clicked!");
+        });
+
+        console.log("3. MOUSEENTER / MOUSELEAVE");
+        box.addEventListener("mouseenter", () => box.style.background = "lightgreen");
+        box.addEventListener("mouseleave", () => box.style.background = "lightcoral");
+
+        console.log("4. KEYBOARD EVENTS");
+        let textInput = document.getElementById("textInput");
+        let inputStatus = document.getElementById("inputStatus");
+        textInput.addEventListener("keydown", (e) => {
+            inputStatus.innerText = `Key down: ${e.key} (code: ${e.code})`;
+            console.log(`Key pressed: ${e.key}`);
+        });
+        textInput.addEventListener("keyup", (e) => {
+            inputStatus.innerText = `Key up: ${e.key}`;
+        });
+        textInput.addEventListener("input", (e) => {
+            console.log("Input value:", e.target.value);
+        });
+
+        console.log("5. FORM SUBMIT EVENT");
+        let form = document.getElementById("myForm");
+        form.addEventListener("submit", (e) => {
+            e.preventDefault(); // stop page reload
+            let username = e.target.username.value;
+            alert(`Form submitted with username: ${username}`);
+            console.log("Form submitted");
+        });
+
+        console.log("6. CHANGE EVENT (select)");
+        let select = document.getElementById("colorSelect");
+        let colorBox = document.getElementById("colorBox");
+        select.addEventListener("change", (e) => {
+            colorBox.style.background = e.target.value;
+            console.log("Color changed to", e.target.value);
+        });
+
+        console.log("7. REMOVING EVENT LISTENER");
+        let removeBtn = document.getElementById("removeBtn");
+        function tempHandler() {
+            alert("This will be removed");
+        }
+        box.addEventListener("click", tempHandler);
+        removeBtn.addEventListener("click", () => {
+            box.removeEventListener("click", tempHandler);
+            alert("Temporary click handler removed from box");
+        });
+
+        console.log("8. EVENT OBJECT PROPERTIES");
+        box.addEventListener("click", (e) => {
+            console.log("Event type:", e.type);
+            console.log("Target element:", e.target);
+            console.log("Coordinates:", e.clientX, e.clientY);
+        });
+
+        console.log("9. EVENT BUBBLING DEMO");
+        document.body.addEventListener("click", () => console.log("Body clicked (bubbling)"));
+        box.addEventListener("click", (e) => {
+            console.log("Box clicked - stop propagation?");
+            // e.stopPropagation(); // uncomment to stop bubbling
+        });
+
+        console.log("Day 27 ready - interact with elements!");
+    </script>
+</body>
+</html>

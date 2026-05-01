@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Day 26: JS DOM Manipulation</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .highlight { background-color: yellow; }
+        .box { width: 100px; height: 100px; background: lightblue; margin: 10px; }
+        button { margin: 5px; padding: 5px 10px; }
+    </style>
+</head>
+<body>
+    <h1 id="mainTitle">DOM Manipulation Demo</h1>
+    <p class="text">First paragraph</p>
+    <p class="text">Second paragraph</p>
+    <div id="container"></div>
+    <div class="box"></div>
+    <button id="changeTextBtn">Change Text</button>
+    <button id="addElementBtn">Add Element</button>
+    <button id="toggleClassBtn">Toggle Class</button>
+
+    <script>
+        // Day 26: JS DOM Manipulation
+
+        console.log("1. SELECTING ELEMENTS");
+        let title = document.getElementById("mainTitle");
+        let paragraphs = document.getElementsByClassName("text");
+        let firstPara = document.querySelector(".text");
+        let allParas = document.querySelectorAll(".text");
+        console.log("Title innerHTML:", title.innerHTML);
+        console.log("First paragraph:", firstPara.innerText);
+
+        console.log("2. CHANGING CONTENT");
+        title.innerText = "DOM Updated!";
+        title.innerHTML = "<i>DOM Updated with HTML</i>";
+
+        console.log("3. CHANGING STYLES");
+        title.style.color = "blue";
+        title.style.fontSize = "24px";
+
+        console.log("4. ADDING/REMOVING CLASSES");
+        let box = document.querySelector(".box");
+        box.classList.add("highlight");
+        setTimeout(() => box.classList.remove("highlight"), 2000);
+
+        console.log("5. CREATING AND APPENDING ELEMENTS");
+        let newDiv = document.createElement("div");
+        newDiv.innerText = "I am a new div";
+        newDiv.style.background = "lightgreen";
+        newDiv.style.padding = "10px";
+        document.getElementById("container").appendChild(newDiv);
+
+        let newButton = document.createElement("button");
+        newButton.innerText = "Click Me";
+        document.body.appendChild(newButton);
+
+        console.log("6. REMOVING ELEMENTS");
+        // newButton.remove(); // uncomment to remove
+
+        console.log("7. GETTING/SETTING ATTRIBUTES");
+        console.log("Title attribute 'id':", title.getAttribute("id"));
+        title.setAttribute("data-info", "important");
+
+        console.log("8. PARENT AND CHILD TRAVERSAL");
+        let parent = title.parentNode;
+        console.log("Parent of title:", parent.tagName);
+        let children = parent.children;
+        console.log("Number of children in body:", children.length);
+
+        console.log("9. EVENT LISTENERS (basic)");
+        document.getElementById("changeTextBtn").addEventListener("click", function() {
+            firstPara.innerText = "Text changed by click!";
+        });
+
+        document.getElementById("addElementBtn").addEventListener("click", function() {
+            let newP = document.createElement("p");
+            newP.innerText = "New paragraph added at " + new Date().toLocaleTimeString();
+            document.getElementById("container").appendChild(newP);
+        });
+
+        document.getElementById("toggleClassBtn").addEventListener("click", function() {
+            box.classList.toggle("highlight");
+        });
+
+        console.log("Day 26 ready - try the buttons!");
+    </script>
+</body>
+</html>
