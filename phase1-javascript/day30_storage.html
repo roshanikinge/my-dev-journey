@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Day 30: Web Storage</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        input, button { margin: 5px; padding: 5px; }
+        .container { border: 1px solid #ccc; padding: 10px; margin: 10px 0; }
+        pre { background: #f4f4f4; padding: 5px; }
+    </style>
+</head>
+<body>
+    <h1>localStorage & sessionStorage Demo</h1>
+
+    <div class="container">
+        <h3>localStorage (persists until manually cleared)</h3>
+        <input type="text" id="localKey" placeholder="Key" value="username">
+        <input type="text" id="localValue" placeholder="Value">
+        <button id="saveLocal">Save to localStorage</button>
+        <button id="getLocal">Get from localStorage</button>
+        <button id="removeLocal">Remove key</button>
+        <button id="clearLocal">Clear all localStorage</button>
+        <p id="localOutput"></p>
+        <pre id="localAll"></pre>
+    </div>
+
+    <div class="container">
+        <h3>sessionStorage (cleared when tab closed)</h3>
+        <input type="text" id="sessionKey" placeholder="Key" value="theme">
+        <input type="text" id="sessionValue" placeholder="Value">
+        <button id="saveSession">Save to sessionStorage</button>
+        <button id="getSession">Get from sessionStorage</button>
+        <button id="removeSession">Remove key</button>
+        <button id="clearSession">Clear all sessionStorage</button>
+        <p id="sessionOutput"></p>
+        <pre id="sessionAll"></pre>
+    </div>
+
+    <script>
+        // Day 30: JS Web Storage
+
+        function updateLocalDisplay() {
+            let out = "";
+            for (let i = 0; i < localStorage.length; i++) {
+                let key = localStorage.key(i);
+                out += `${key}: ${localStorage.getItem(key)}\n`;
+            }
+            document.getElementById("localAll").innerText = out || "(empty)";
+        }
+
+        function updateSessionDisplay() {
+            let out = "";
+            for (let i = 0; i < sessionStorage.length; i++) {
+                let key = sessionStorage.key(i);
+                out += `${key}: ${sessionStorage.getItem(key)}\n`;
+            }
+            document.getElementById("sessionAll").innerText = out || "(empty)";
+        }
+
+        // localStorage actions
+        document.getElementById("saveLocal").addEventListener("click", () => {
+            let key = document.getElementById("localKey").value;
+            let value = document.getElementById("localValue").value;
+            if (key) {
+                localStorage.setItem(key, value);
+                document.getElementById("localOutput").innerText = `Saved: ${key}=${value}`;
+                updateLocalDisplay();
+                console.log(`localStorage set: ${key}=${value}`);
+            }
+        });
+
+        document.getElementById("getLocal").addEventListener("click", () => {
+            let key = document.getElementById("localKey").value;
+            let val = localStorage.getItem(key);
+            document.getElementById("localOutput").innerText = val !== null ? `${key} = ${val}` : `Key "${key}" not found`;
+        });
+
+        document.getElementById("removeLocal").addEventListener("click", () => {
+            let key = document.getElementById("localKey").value;
+            localStorage.removeItem(key);
+            document.getElementById("localOutput").innerText = `Removed "${key}"`;
+            updateLocalDisplay();
+        });
+
+        document.getElementById("clearLocal").addEventListener("click", () => {
+            localStorage.clear();
+            document.getElementById("localOutput").innerText = "All localStorage cleared";
+            updateLocalDisplay();
+            console.log("localStorage cleared");
+        });
+
+        // sessionStorage actions
+        document.getElementById("saveSession").addEventListener("click", () => {
+            let key = document.getElementById("sessionKey").value;
+            let value = document.getElementById("sessionValue").value;
+            if (key) {
+                sessionStorage.setItem(key, value);
+                document.getElementById("sessionOutput").innerText = `Saved: ${key}=${value}`;
+                updateSessionDisplay();
+                console.log(`sessionStorage set: ${key}=${value}`);
+            }
+        });
+
+        document.getElementById("getSession").addEventListener("click", () => {
+            let key = document.getElementById("sessionKey").value;
+            let val = sessionStorage.getItem(key);
+            document.getElementById("sessionOutput").innerText = val !== null ? `${key} = ${val}` : `Key "${key}" not found`;
+        });
+
+        document.getElementById("removeSession").addEventListener("click", () => {
+            let key = document.getElementById("sessionKey").value;
+            sessionStorage.removeItem(key);
+            document.getElementById("sessionOutput").innerText = `Removed "${key}"`;
+            updateSessionDisplay();
+        });
+
+        document.getElementById("clearSession").addEventListener("click", () => {
+            sessionStorage.clear();
+            document.getElementById("sessionOutput").innerText = "All sessionStorage cleared";
+            updateSessionDisplay();
+            console.log("sessionStorage cleared");
+        });
+
+        // initial display
+        updateLocalDisplay();
+        updateSessionDisplay();
+        console.log("Day 30 ready - try storing data, then refresh page to see persistence difference");
+    </script>
+</body>
+</html>
