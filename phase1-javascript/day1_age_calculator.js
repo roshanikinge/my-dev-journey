@@ -1,5 +1,5 @@
 // Day 1: Age Calculator (Windows friendly)
-// Run with: node day1-age-calculator.js 1995
+
 
 function calculateAge(birthYear) {
     const currentYear = new Date().getFullYear();
