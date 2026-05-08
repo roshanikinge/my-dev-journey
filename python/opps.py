@@ -239,3 +239,263 @@ class CurrentAccount(Account):
 obj11=CurrentAccount("roshani",200000000)
 obj11.minimum_balance_check()
 print("Account_holderName",obj11.Acc_holderName)
+
+
+
+
+
+#Here are some practice questions for Multilevel Inheritance in Python:
+
+# Create a class Grandfather with method show_grandfather().
+# Derive a class Father from Grandfather with method show_father().
+# Derive a class Son from Father with method show_son().
+
+
+class GrandFather():
+    def __init__(self,g_name,g_age):
+        self.g_name=g_name
+        self.g_age=g_age
+    
+    def show_grandfather(self):
+        print("show_grandfather_info=",self.g_name,self.g_age)
+    
+class Father(GrandFather):
+    def __init__(self,f_name,f_age,g_name,g_age):
+        self.f_name=f_name
+        self.f_age=f_age
+        super().__init__( g_name,g_age)
+
+    def show_father(self):
+        print("show_father_info=",self.f_age,self.f_name)
+
+class Son(Father):
+    def __init__(self,s_name,s_age,f_name,f_age,g_name,g_age):
+        self.s_name=s_name
+        self.s_age=s_age
+        super().__init__(f_name,f_age,g_name,g_age)
+    
+    def show_son(self):
+        print("show_son_info=",self.s_age,self.s_name)
+
+obj12=Son("roshani",22,"sunil",56,"rakesh",86)
+obj12.show_grandfather()
+obj12.show_father()
+obj12.show_son()
+
+
+
+
+
+
+# 
+#  Create a class Vehicle with attribute brand.
+# Derive a class Car with attribute model.
+# Derive a class SportsCar with attribute top_speed.
+# 
+# Create a class Person with attributes name and age.
+# Derive a class Employee with attribute salary.
+# Derive a class Manager with attribute department.
+# 
+# 
+# Create a class Animal with method eat().
+# Derive a class Mammal with method walk().
+# Derive a class Dog with method bark().
+# 
+# 
+# Create a class University with attribute university_name.
+# Derive a class College with attribute college_name.
+# Derive a class Department with attribute department_name.
+# 
+# 
+# Create a class Account with attribute balance.
+# Derive a class SavingsAccount with method deposit().
+# Derive a class CurrentAccount with method withdraw().
+# 
+# 
+# Create a class Electronics with attribute brand.
+# Derive a class Mobile with attribute ram.
+# Derive a class SmartPhone with attribute camera.
+# 
+# 
+# Create a class Shape with method display_shape().
+# Derive a class Rectangle with method rectangle_area().
+# Derive a class Box with method box_volume().
+# 
+# 
+# Create a class School with attribute school_name.
+# Derive a class Teacher with attribute subject.
+# Derive a class Student with attribute marks.
+# 
+# 
+# Create a class Book with attribute title.
+# Derive a class EBook with attribute file_size.
+# Derive a class AudioBook with attribute duration.
+
+
+
+
+
+
+    
+#Here are some practice questions for Multiple Inheritance implementation in Python:
+
+# Create a class Father with method show_father().
+# Create a class Mother with method show_mother().
+# Create a child class Child inheriting from both with method show_child().
+
+
+############# by using super keywords this is advance########################
+###############  we can also used as normal like invoked parent and mother
+# class seperetly so no need to write super keyword but it is not to good##########
+
+
+class Father():
+    def __init__(self,f_name,f_age,**kwargs):
+        self.f_name=f_name
+        self.f_age=f_age
+        super().__init__(**kwargs)
+    
+    def show_father(self):
+        print("show_father_info=",self.f_name,self.f_age)
+
+class Mother():
+    def __init__(self,m_name,m_age,**kwargs):
+        self.m_name=m_name
+        self.m_age=m_age
+        super().__init__(**kwargs)
+
+    def show_mother(self):
+        print("show_mother_info=",self.m_name,self.m_age)
+
+class Child(Father,Mother):
+    def __init__(self,c_name,c_age,f_name,f_age,m_name,m_age):
+        self.c_name=c_name
+        self.c_age=c_age
+        super().__init__(f_name=f_name,f_age=f_age,m_name=m_name,m_age=m_age)
+    
+    def show_child(self):
+        print("show_child_info",self.c_name,self.c_age,self.m_name,self.m_age,self.f_name,self.f_age)
+
+obj13=Child("roshani",22,"renuka",40,"sunil",56)
+obj13.show_child()
+
+print(Child.mro())
+#this is output of mro
+# [<class '__main__.Child'>, 
+#  <class '__main__.Father'>, 
+#  <class '__main__.Mother'>,
+#    <class 'object'>]
+#  mro means method resolution method it is method
+#  to serches the classes class c ,a,b
+
+
+
+
+
+
+
+        
+
+#
+# Create a class Teacher with attribute subject.
+# Create a class Researcher with attribute research_topic.
+# Create a class Professor inheriting from both.
+#
+#  Create a class Engine with attribute engine_type.
+# Create a class Wheels with attribute wheel_count.
+# Create a class Car inheriting from both and add attribute car_name.
+# 
+# Create a class Student with attribute student_name.
+# Create a class Sports with attribute sport_name.
+# Create a class SchoolStudent inheriting from both with attribute grade.
+# 
+# Create a class Singer with method sing().
+# Create a class Dancer with method dance().
+# Create a class Artist inheriting from both with method perform().
+# 
+# Create a class Writer with attribute book_name.
+# Create a class Speaker with attribute topic.
+# Create a class Author inheriting from both with attribute author_name.
+# 
+# Create a class Camera with method take_photo().
+# Create a class Phone with method make_call().
+# Create a class SmartPhone inheriting from both with method internet().
+# 
+# Create a class Bank with attribute bank_name.
+# Create a class Customer with attribute customer_name.
+# Create a class Account inheriting from both with attribute balance.
+# 
+# 
+# Create a class Laptop with attribute ram.
+# Create a class Computer with attribute processor.
+# Create a class GamingLaptop inheriting from both with attribute graphics_card.
+# 
+# Create a class Employee with attribute emp_id.
+# Create a class Department with attribute dept_name.
+# Create a class Manager inheriting from both with attribute salary.
+
+
+
+
+# Here are some practice questions for Hierarchical Inheritance in Python
+# Practice Questions:
+
+# Create a class Animal with method eat().
+# Derive classes Dog and Cat from Animal with methods bark() and meow().
+class Animal:
+    def __init__(self, a_name, a_color):
+        self.a_name = a_name
+        self.a_color = a_color
+
+    def eat(self):
+        print("eat_method =", self.a_name, self.a_color)
+
+
+class Dog(Animal):
+    def bark(self):
+        print("dog says bark")
+
+
+class Cat(Animal):
+    def meow(self):
+        print("cat says meow")
+
+
+obj1 = Dog("Dog", "Black")
+obj1.eat()
+obj1.bark()
+
+obj2 = Cat("Cat", "White")
+obj2.eat()
+obj2.meow()
+       
+
+    
+#
+#  Create a class Vehicle with attribute brand.
+# Derive classes Car and Bike with attributes car_model and bike_model.
+# 
+# Create a class Person with attributes name and age.
+# Derive classes Student and Teacher with attributes marks and subject.
+# 
+# Create a class BankAccount with attribute balance.
+# Derive classes SavingsAccount and CurrentAccount with methods add_interest() and minimum_balance().
+# 
+# Create a class Shape with method display_shape().
+# Derive classes Rectangle and Circle with methods rectangle_area() and circle_area().
+# 
+# Create a class Employee with attribute salary.
+# Derive classes Manager and Developer with attributes department and programming_language.
+# 
+# Create a class ElectronicDevice with attribute brand.
+# Derive classes Mobile and Laptop with attributes camera and ram.
+# 
+# Create a class College with attribute college_name.
+# Derive classes Department and Library with attributes department_name and book_count.
+# 
+# Create a class Account with method account_info().
+# Derive classes Admin and User with methods admin_panel() and user_dashboard().
+# 
+# Create a class Appliance with attribute power.
+# Derive classes WashingMachine and Refrigerator with attributes capacity and temperature.
+
