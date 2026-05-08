@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Day 36: Service Worker (combined)</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        button {
+            margin: 5px;
+            padding: 10px 15px;
+            cursor: pointer;
+        }
+        .status {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .online { background: #d4edda; color: #155724; }
+        .offline { background: #f8d7da; color: #721c24; }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Service Worker Demo (single file)</h1>
+    
+    <div id="networkStatus" class="status online">Online</div>
+    
+    <h3>Controls</h3>
+    <button id="registerBtn">Register Service Worker</button>
+    <button id="unregisterBtn">Unregister Service Worker</button>
+    <button id="clearCacheBtn">Clear Cache</button>
+    
+    <h3>Test Fetch</h3>
+    <button id="fetchTestBtn">Fetch Cached Data</button>
+    <pre id="fetchResult">Click button to fetch data</pre>
+    
+    <h3>Instructions</h3>
+    <ol>
+        <li>Click "Register Service Worker"</li>
+        <li>Go offline (DevTools → Network tab → Offline)</li>
+        <li>Refresh page - it should still load from cache</li>
+        <li>Click "Fetch Cached Data" - returns cached response</li>
+    </ol>
+
+    <script>
+        // Day 36: JS Service Workers - Combined file (worker embedded as blob)
+
+        let currentRegistration = null;
+        const CACHE_NAME = "my-cache-v1";
+
+        function log(message) {
+            console.log("[Main]", message);
+        }
+
+        function updateStatus(online) {
+            const statusDiv = document.getElementById("networkStatus");
+            if (online) {
+                statusDiv.className = "status online";
+                statusDiv.innerText = "Online";
+            } else {
+                statusDiv.className = "status offline";
+                statusDiv.innerText = "Offline (Service Worker should serve cached content)";
+            }
+        }
+
+        window.addEventListener("online", () => updateStatus(true));
+        window.addEventListener("offline", () => updateStatus(false));
+
+        // Service worker code as a blob
+        const swCode = `
+            const CACHE_NAME = "${CACHE_NAME}";
+            const urlsToCache = [
+                "./",
+                "./day36_serviceworker_combined.html"
+            ];
+
+            self.addEventListener("install", (event) => {
+                console.log("[SW] Install event");
+                self.skipWaiting();
+                event.waitUntil(
+                    caches.open(CACHE_NAME).then((cache) => {
+                        console.log("[SW] Caching assets");
+                        return cache.addAll(urlsToCache);
+                    }).catch(err => console.log("[SW] Cache error:", err))
+                );
+            });
+
+            self.addEventListener("activate", (event) => {
+                console.log("[SW] Activate event");
+                event.waitUntil(
+                    caches.keys().then((cacheNames) => {
+                        return Promise.all(
+                            cacheNames.map((cacheName) => {
+                                if (cacheName !== CACHE_NAME) {
+                                    console.log("[SW] Deleting old cache:", cacheName);
+                                    return caches.delete(cacheName);
+                                }
+                            })
+                        );
+                    })
+                );
+                return self.clients.claim();
+            });
+
+            self.addEventListener("fetch", (event) => {
+                event.respondWith(
+                    caches.match(event.request).then((response) => {
+                        if (response) {
+                            console.log("[SW] Cache hit:", event.request.url);
+                            return response;
+                        }
+                        console.log("[SW] Cache miss, fetching:", event.request.url);
+                        return fetch(event.request).then((fetchResponse) => {
+                            if (fetchResponse && fetchResponse.status === 200) {
+                                const responseClone = fetchResponse.clone();
+                                caches.open(CACHE_NAME).then((cache) => {
+                                    cache.put(event.request, responseClone);
+                                });
+                            }
+                            return fetchResponse;
+                        });
+                    }).catch(() => {
+                        return new Response("Offline - Request failed", { status: 503 });
+                    })
+                );
+            });
+
+            self.addEventListener("message", (event) => {
+                if (event.data && event.data.type === "SKIP_WAITING") {
+                    self.skipWaiting();
+                }
+            });
+        `;
+
+        const blob = new Blob([swCode], { type: "application/javascript" });
+        const swURL = URL.createObjectURL(blob);
+
+        async function registerSW() {
+            if (!('serviceWorker' in navigator)) {
+                alert("Service Worker not supported in this browser");
+                return false;
+            }
+
+            try {
+                const registration = await navigator.serviceWorker.register(swURL);
+                log("Service Worker registered");
+                currentRegistration = registration;
+                
+                if (registration.waiting) {
+                    registration.waiting.postMessage({ type: "SKIP_WAITING" });
+                }
+                
+                alert("Service Worker registered successfully!");
+                return true;
+            } catch (error) {
+                log("Registration failed:", error);
+                alert("Registration failed: " + error.message);
+                return false;
+            }
+        }
+
+        async function unregisterSW() {
+            if (currentRegistration) {
+                const result = await currentRegistration.unregister();
+                if (result) {
+                    log("Service Worker unregistered");
+                    currentRegistration = null;
+                    alert("Service Worker unregistered");
+                } else {
+                    alert("Unregistration failed");
+                }
+                return;
+            }
+            
+            const registration = await navigator.serviceWorker.getRegistration();
+            if (registration) {
+                const result = await registration.unregister();
+                if (result) {
+                    log("Service Worker unregistered");
+                    alert("Service Worker unregistered");
+                }
+            } else {
+                alert("No Service Worker registered");
+            }
+        }
+
+        async function clearCache() {
+            if ('caches' in window) {
+                const keys = await caches.keys();
+                await Promise.all(keys.map(key => caches.delete(key)));
+                log("All caches cleared");
+                alert("Cache cleared");
+            } else {
+                alert("Cache API not supported");
+            }
+        }
+
+        async function testFetch() {
+            const resultDiv = document.getElementById("fetchResult");
+            resultDiv.innerText = "Fetching...";
+            
+            try {
+                const response = await fetch("/api/test");
+                const data = await response.text();
+                resultDiv.innerText = data;
+            } catch (error) {
+                resultDiv.innerText = "Fetch failed: " + error.message + "\n\nIf offline, SW should serve cached response.";
+            }
+        }
+
+        document.getElementById("registerBtn").onclick = registerSW;
+        document.getElementById("unregisterBtn").onclick = unregisterSW;
+        document.getElementById("clearCacheBtn").onclick = clearCache;
+        document.getElementById("fetchTestBtn").onclick = testFetch;
+    </script>
+</body>
+</html>
