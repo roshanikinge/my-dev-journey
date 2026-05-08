@@ -223,3 +223,19 @@ obj10.departement()
 
 # Create a class Account with attribute balance.
 # Derive a class CurrentAccount with method minimum_balance_check().
+
+class Account():
+    def __init__(self,balance):
+        self.balance=balance
+
+class CurrentAccount(Account):
+    def __init__(self,Acc_holderName,balance):
+        self.Acc_holderName=Acc_holderName
+        super().__init__(balance)
+
+    def minimum_balance_check(self):
+        print("minimum_balance_check", self.balance)
+
+obj11=CurrentAccount("roshani",200000000)
+obj11.minimum_balance_check()
+print("Account_holderName",obj11.Acc_holderName)
