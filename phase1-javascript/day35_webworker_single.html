@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Day 35: Web Worker (inline)</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        button { margin: 5px; padding: 5px 10px; }
+        pre { background: #f4f4f4; padding: 10px; }
+        .status { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>Web Worker Demo (all-in-one)</h1>
+    <button id="startWorker">Start Heavy Calculation</button>
+    <button id="cancelWorker">Cancel</button>
+    <button id="freeClick">Click Me (UI demo)</button>
+    <p class="status" id="status">Idle</p>
+    <pre id="result">Result will appear here</pre>
+
+    <script>
+        let worker = null;
+
+        const workerCode = `
+            self.onmessage = function(e) {
+                let sum = 0;
+                for (let i = 0; i < 500000000; i++) {
+                    sum += i;
+                }
+                self.postMessage(sum);
+            };
+        `;
+
+        const blob = new Blob([workerCode], { type: "application/javascript" });
+        const workerURL = URL.createObjectURL(blob);
+
+        document.getElementById("startWorker").onclick = () => {
+            if (worker) {
+                document.getElementById("status").innerText = "Worker already running";
+                return;
+            }
+            document.getElementById("status").innerText = "Worker started... calculating (optimized)";
+            document.getElementById("result").innerText = "Working...";
+
+            worker = new Worker(workerURL);
+
+            worker.onmessage = (event) => {
+                document.getElementById("result").innerText = "Result: " + event.data;
+                document.getElementById("status").innerText = "Worker finished";
+                worker.terminate();
+                worker = null;
+                URL.revokeObjectURL(workerURL);
+            };
+
+            worker.onerror = (error) => {
+                document.getElementById("status").innerText = "Worker error";
+                console.error(error);
+                worker.terminate();
+                worker = null;
+            };
+        };
+
+        document.getElementById("cancelWorker").onclick = () => {
+            if (worker) {
+                worker.terminate();
+                worker = null;
+                document.getElementById("status").innerText = "Worker cancelled";
+                document.getElementById("result").innerText = "Cancelled by user";
+            } else {
+                document.getElementById("status").innerText = "No worker running";
+            }
+        };
+
+        document.getElementById("freeClick").onclick = () => {
+            alert("UI is responsive! Worker runs in background.");
+        };
+    </script>
+</body>
+</html>
