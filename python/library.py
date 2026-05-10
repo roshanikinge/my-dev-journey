@@ -161,3 +161,80 @@ pd.set_option('display.float_format', '{:.0f}'.format)
 print(var3)
 
 
+# 6. Filtering Columns
+
+#  only text (object) type columns.
+print("numberdatatype_column is:\n",var3.select_dtypes(include="number"))
+print("string_datatypecolumn:\n",var3.select_dtypes(include="str"))
+
+
+
+# 🔹 7. Sorting based on column
+
+#  emp_name and sort them based on salary in descending order
+var3=var3.sort_values(by="emp_sal",ascending=False)
+print(var3)
+
+
+
+
+# 🔹 8. Multiple Column Operation
+
+# Create a DataFrame of employees:
+
+# select emp_name, department
+# add bonus column
+# sort by salary
+
+import pandas as pd
+data4={
+    "emp_name":["pratiksha","kinge"],
+    "department":["cs","marketing"],
+    "salary": [200000000 ,5000000000]
+}
+
+var4=pd.DataFrame(data4)
+print(var4)
+
+# Select emp_name and department
+print(var4[["emp_name", "department"]])
+
+var4["bonus"]=[20000,20000]
+print(var4)
+
+var4=var4.sort_values(by="salary",ascending=True)
+print(var4)
+
+
+
+# 🔹 9. Column Value Replacement
+
+# Create a DataFrame and replace all values in city column with "Pune".
+
+import pandas as pd
+data={
+    "city":["mumbai","nashik"]
+
+}
+var5=pd.DataFrame(data)
+print(var5)
+
+# Replace all city values with "Pune"
+var5["city"] = "Pune"
+print(var5)
+
+
+# 🔹 10. Check Column Names
+
+# Create a DataFrame and display all column names.
+import pandas as pd
+data6={
+    "emp_name":["pratiksha","kinge"],
+    "department":["cs","marketing"],
+    "salary": [200000000 ,5000000000]
+}
+
+var6=pd.DataFrame(data6)
+print(var6)
+print(var6.columns)
+
