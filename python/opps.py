@@ -481,8 +481,47 @@ obj2.meow()
 # Create a class BankAccount with attribute balance.
 # Derive classes SavingsAccount and CurrentAccount with methods add_interest() and minimum_balance().
 # 
-# Create a class Shape with method display_shape().
-# Derive classes Rectangle and Circle with methods rectangle_area() and circle_area().
+class Shape:
+    def display_shape(self):
+        print("This is a shape")
+
+
+class Rectangle(Shape):
+    def __init__(self, length, width):
+        self.length = length
+        self.width = width
+
+    def rectangle_area(self):
+        area = self.length * self.width
+        print("Area of Rectangle =", area)
+
+
+class Circle(Shape):
+    def __init__(self, r):
+        self.r = r
+        self.pi = 3.14
+
+    def circle_area(self):
+        area = self.pi * self.r * self.r
+        print("Area of Circle =", area)
+
+
+# Object creation
+objRectangle = Rectangle(3, 5)
+objCircle = Circle(3)
+
+# Parent method
+objRectangle.display_shape()
+objCircle.display_shape()
+
+# Child methods
+objRectangle.rectangle_area()
+objCircle.circle_area()
+
+
+
+       
+
 # 
 # Create a class Employee with attribute salary.
 # Derive classes Manager and Developer with attributes department and programming_language.
@@ -498,4 +537,517 @@ obj2.meow()
 # 
 # Create a class Appliance with attribute power.
 # Derive classes WashingMachine and Refrigerator with attributes capacity and temperature.
+
+
+
+
+
+
+# Here are implementation practice questions covering all access specifiers
+# in Python (public, protected, private):
+
+# 1. Public Variables
+
+# Create a class Student with:
+
+# public attributes: name, age
+# method display() to print details
+
+#  Create object and access variables outside class.
+
+class Student():
+    def __init__(self,name ,age):
+        self.name=name
+        self.age=age
+    def disply(self):
+        print("display=",self.name,self.age)
+obj14=Student("roshani",21)
+obj14.disply()
+
+
+
+# 2. Protected Variables
+
+# Create a class Employee with:
+
+# protected attributes: _emp_name, _salary
+# method show() to display details
+
+# Access protected variables inside and outside class
+
+
+class Employee():
+    def __init__(self,emp_name,emp_salary):
+        self._emp_name=emp_name
+        self._emp_salary=emp_salary
+    
+    def show(self):
+        print("display emp details:",self._emp_name,self._emp_salary)
+obj15=Employee("roshani",4000000)
+# obj15.show()
+
+
+# 3. Private Variables
+
+# Create a class BankAccount with:
+
+# private attribute: __balance
+# method show_balance() to display balance
+
+# Try accessing __balance outside class and observe error.
+
+
+class BBankaccount():
+    def __init__(self,balance):
+        self.__balance=balance
+    
+    def show_balance(self):
+        print("show_balance:",self.__balance)
+obj16= BBankaccount(2000000000000)
+# print(obj16.__balance)   AttributeError: 'BBankaccount' object has no attribute '__balance'
+# Because Python converts private variables internally like:
+# __balance → _BBankaccount__balance
+# So technically you can access like this (not recommended):
+# print(obj16._BBankaccount__balance)
+
+# __balance → private
+# can be used inside class
+# cannot be accessed directly outside
+# Python hides it using name mangling
+
+obj16.show_balance()
+
+
+
+
+# 4. All Access Types Together
+
+# Create a class Company with:
+
+# public: company_name
+# protected: _location
+# private: __ceo_name
+
+# 👉 Write method display() to print all attributes.
+
+
+
+
+
+
+# 🔹 5. Employee System
+
+# Create class Employee:
+
+# public: name
+# protected: _department
+# private: __salary
+
+# 👉 Create method show_employee()
+# 👉 Try accessing all variables outside class
+
+
+
+
+
+# 🔹 6. Bank System
+
+# Create class Account:
+
+# public: acc_name
+# protected: _acc_no
+# private: __balance
+
+# 👉 Add method display_account()
+
+
+
+
+
+
+
+# 🔹 7. College System
+
+# Create class College:
+
+# public: college_name
+# protected: _address
+# private: __principal
+
+# 👉 Show all details using method
+
+
+
+
+
+
+# 🔹 8. Product Class
+
+# Create class Product:
+
+# public: product_name
+# protected: _price
+# private: __discount
+
+#  👉 Display product details inside method only
+
+
+
+
+
+
+# 🔹 9. Vehicle Class
+
+# Create class Vehicle:
+
+# public: brand
+# protected: _speed
+# private: __engine_number
+
+# 👉 Try accessing all from object
+
+
+
+
+
+# 🔹 10. Access Testing Task
+
+# Create class Test with:
+
+# one public variable
+# one protected variable
+# one private variable
+
+# 👉 Create object and:
+
+# print all variables
+# observe which works and which fails
+
+
+
+
+# 1. isinstance() Method
+
+# Create a class Animal and a child class Dog.
+# Use isinstance() to check whether Dog is a child of Animal.
+
+class Animal():
+    pass
+class Dog(Animal):
+    pass
+
+obj17=Dog()
+print(isinstance(obj17,Animal))
+print(isinstance(obj17, Dog))
+
+
+# 🔹 2. issubclass() Method
+# Question:
+
+# Create a class Vehicle and a child class Car.
+# Create object of Car and check whether it belongs to Car and Vehicle.
+
+class Vehicle():
+    pass
+class Car(Vehicle):
+    pass
+
+print(issubclass(Car,Vehicle))
+
+
+
+# 🔹 3. finalize / Destructor Method
+
+# (In Python we use __del__() as destructor/finalize method)
+
+# Question:
+
+# Create a class Student with constructor and destructor.
+# Display message when object is created and destroyed.
+
+
+class Student():
+    def __init__(self,s_name):
+        self.s_name=s_name
+        
+    def __del__(self): # that is the destructor
+        print("obj destroyed")
+obj18=Student("roshnai")
+del obj18
+
+
+
+
+
+# Here are some practice questions for Encapsulation implementation in Python:#
+#############################################################################
+
+# 🔹 1. Bank Account
+
+# Create a class BankAccount with:
+
+# private variable __balance
+# method deposit()
+# method withdraw()
+# method show_balance()
+
+
+class BankAccount():
+    def __init__(self,balacne):
+        self.__balance=balacne
+
+    def deposit(self):
+        print("deposit")
+    
+    def withdraw(self):
+        print("withdraw")
+    
+    def show_blance(self):
+        print("show_balance=",self.__balance)
+
+
+obj19=BankAccount(30000)
+obj19.show_blance()
+
+
+
+
+
+# 🔹 2. Student Details
+
+# Create a class Student with:
+
+# private variable __marks
+# method set_marks()
+# method get_marks()
+# 🔹 3. Employee System
+
+# Create a class Employee with:
+
+# private variable __salary
+# method set_salary()
+# method show_salary()
+# 🔹 4. Mobile Phone
+
+# Create a class Mobile with:
+
+# private variable __price
+# method set_price()
+# method get_price()
+# 🔹 5. ATM Machine
+
+# Create a class ATM with:
+
+# private variable __pin
+# method change_pin()
+# method show_pin()
+# 🔹 6. Car Information
+
+# Create a class Car with:
+
+# private variable __speed
+# method set_speed()
+# method display_speed()
+# 🔹 7. Product Management
+
+# Create a class Product with:
+
+# private variable __discount
+# method set_discount()
+# method get_discount()
+# 🔹 8. College Management
+
+# Create a class College with:
+
+# private variable __fees
+# method set_fees()
+# method show_fees()
+
+
+
+# 🔹 9. Hospital Record
+# Create a class Patient with:
+# private variable __disease
+# method set_disease()
+# method get_disease()
+
+class Patient():
+    def __init__(self,disease):
+        self.__disease=disease
+    
+    def set_disease(self):
+        self.__disease="HIV"
+    
+    def get_disease(self):
+        print("get_disease=",self.__disease)
+
+obj21=Patient("Cancer")
+obj21.set_disease()
+obj21.get_disease()
+
+
+
+
+
+
+
+
+# 🔹 10. User Account
+# Create a class User with:
+# private variable __password
+# method change_password()
+# method show_password()
+
+
+
+class User():
+    def __init__(self,password):
+        self.__password=password
+    
+    def change_password(self):
+        self.__password="roshani"
+    
+    def show_password (self):
+        print("show_password=",self.__password)
+
+obj20=User("kinge")
+obj20.change_password()
+obj20.show_password()
+
+
+
+
+
+
+
+# Here are some practice questions for Polymorphism implementation in Python:
+# 🔹 1. Animal Sound
+
+# Create classes Dog and Cat with same method sound().
+# Display different sounds for both objects.
+
+class Dog():
+    def __init__(self,sound):
+        self.sound=sound
+    
+    def show_sound(self):
+      pass
+    
+class Cat(Dog):
+    def __init__(self,sound1,sound):
+        self.sound1=sound1
+        super().__init__(sound)
+    
+    def show_sound(self):
+        print("cat sound=",self.sound,self.sound1)
+
+obj22=Cat("bark","meow")
+obj22.show_sound()
+
+
+# This is the standard polymorphism example because:
+
+# same method name → show_sound()
+# different outputs
+
+
+class Dog:
+    def show_sound(self):
+        print("Dog sound = bark")
+
+
+class Cat:
+    def show_sound(self):
+        print("Cat sound = meow")
+
+
+obj1 = Dog()
+obj2 = Cat()
+
+obj1.show_sound()
+obj2.show_sound()
+
+
+
+
+# 🔹 2. Vehicle Speed
+
+# Create classes Car and Bike with same method speed().
+# Print different speed messages.
+
+
+class Car():
+   
+    def speed(self):
+        print("car_speed =220k")
+    
+class Bike():
+    
+    def speed(self):
+        print("bike_spped=5400")
+
+obj23=Car()
+obj24=Bike()
+
+obj24.speed()
+obj23.speed()
+
+
+
+
+     
+# 🔹 3. Employee Work
+
+# Create classes Developer and Manager with same method work().
+# Display different work roles.
+
+
+class Developer():
+    def work(self):
+        print("developerwork=sf")
+
+class Manager():
+    def work(self):
+        print("Managerwok=manage")
+
+obj25=Developer()
+obj26=Manager()
+obj25.work()
+obj26.work()
+
+
+# 🔹 4. Shape Area
+
+# Create classes Circle and Rectangle with same method area().
+# Print area calculations.
+
+# 🔹 5. Payment System
+
+# Create classes CreditCard and UPI with same method pay().
+# Display different payment methods.
+
+# 🔹 6. Notification System
+
+# Create classes Email and SMS with same method send_message().
+# Print different notification messages.
+
+# 🔹 7. Student Result
+
+# Create classes SchoolStudent and CollegeStudent with same method result().
+# Display different result formats.
+
+# 🔹 8. Bird Flying
+
+# Create classes Sparrow and Eagle with same method fly().
+# Display different flying styles.
+
+# 🔹 9. Login System
+
+# Create classes Admin and User with same method login().
+# Display different login permissions.
+
+# 🔹 10. Media Player
+
+# Create classes AudioPlayer and VideoPlayer with same method play().
+# Display different playing messages.
 
