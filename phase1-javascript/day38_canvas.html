@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Day 38: Canvas API</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 900px; margin: 0 auto; }
+        canvas { border: 2px solid #333; margin: 10px 0; background: #fff; }
+        button { margin: 5px; padding: 8px 12px; cursor: pointer; }
+        .section { border: 1px solid #ccc; margin: 15px 0; padding: 15px; border-radius: 5px; }
+        .row { display: flex; gap: 20px; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <h1>Canvas API Demo</h1>
+
+    <div class="section">
+        <h3>1. Basic Shapes</h3>
+        <canvas id="basicCanvas" width="400" height="200" style="border:1px solid #ddd"></canvas>
+    </div>
+
+    <div class="section">
+        <h3>2. Drawing Paths & Lines</h3>
+        <canvas id="pathCanvas" width="400" height="200" style="border:1px solid #ddd"></canvas>
+    </div>
+
+    <div class="section">
+        <h3>3. Colors, Gradients & Shadows</h3>
+        <canvas id="styleCanvas" width="400" height="200" style="border:1px solid #ddd"></canvas>
+    </div>
+
+    <div class="section">
+        <h3>4. Text and Images</h3>
+        <canvas id="textCanvas" width="400" height="200" style="border:1px solid #ddd"></canvas>
+    </div>
+
+    <div class="section">
+        <h3>5. Animation - Bouncing Ball</h3>
+        <canvas id="animationCanvas" width="400" height="200" style="border:1px solid #ddd"></canvas>
+        <div>
+            <button id="startAnimBtn">Start Animation</button>
+            <button id="stopAnimBtn">Stop Animation</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>6. Interactive Drawing</h3>
+        <canvas id="drawCanvas" width="500" height="300" style="border:1px solid #ddd; cursor: crosshair;"></canvas>
+        <div>
+            <button id="clearDrawBtn">Clear Drawing</button>
+            <label>Color: </label>
+            <input type="color" id="drawColor" value="#FF0000">
+        </div>
+    </div>
+
+    <script>
+        // Day 38: Canvas API - 2D Graphics
+
+        // 1. Basic Shapes
+        const basicCanvas = document.getElementById("basicCanvas");
+        const ctx1 = basicCanvas.getContext("2d");
+        
+        // Rectangle
+        ctx1.fillStyle = "#4CAF50";
+        ctx1.fillRect(20, 20, 100, 60);
+        
+        ctx1.fillStyle = "#2196F3";
+        ctx1.fillRect(140, 50, 80, 80);
+        
+        // Stroked rectangle
+        ctx1.strokeStyle = "#FF5722";
+        ctx1.lineWidth = 3;
+        ctx1.strokeRect(250, 30, 100, 50);
+        
+        // Clear rectangle
+        ctx1.clearRect(25, 25, 90, 50);
+        
+        // 2. Drawing Paths & Lines
+        const pathCanvas = document.getElementById("pathCanvas");
+        const ctx2 = pathCanvas.getContext("2d");
+        
+        // Triangle
+        ctx2.beginPath();
+        ctx2.moveTo(50, 30);
+        ctx2.lineTo(20, 80);
+        ctx2.lineTo(80, 80);
+        ctx2.closePath();
+        ctx2.fillStyle = "#FF9800";
+        ctx2.fill();
+        
+        // Circle
+        ctx2.beginPath();
+        ctx2.arc(200, 50, 30, 0, Math.PI * 2);
+        ctx2.fillStyle = "#9C27B0";
+        ctx2.fill();
+        
+        // Arc (semi-circle)
+        ctx2.beginPath();
+        ctx2.arc(300, 50, 30, 0, Math.PI);
+        ctx2.fillStyle = "#E91E63";
+        ctx2.fill();
+        
+        // Line with arrow
+        ctx2.beginPath();
+        ctx2.moveTo(50, 150);
+        ctx2.lineTo(150, 100);
+        ctx2.lineTo(140, 105);
+        ctx2.moveTo(150, 100);
+        ctx2.lineTo(145, 110);
+        ctx2.strokeStyle = "#333";
+        ctx2.lineWidth = 2;
+        ctx2.stroke();
+        
+        // 3. Colors, Gradients & Shadows
+        const styleCanvas = document.getElementById("styleCanvas");
+        const ctx3 = styleCanvas.getContext("2d");
+        
+        // Linear gradient
+        const gradient = ctx3.createLinearGradient(0, 0, 200, 0);
+        gradient.addColorStop(0, "#FF0000");
+        gradient.addColorStop(0.5, "#FFFF00");
+        gradient.addColorStop(1, "#00FF00");
+        ctx3.fillStyle = gradient;
+        ctx3.fillRect(20, 20, 180, 60);
+        
+        // Radial gradient
+        const radialGrad = ctx3.createRadialGradient(300, 50, 10, 300, 50, 40);
+        radialGrad.addColorStop(0, "#FF5722");
+        radialGrad.addColorStop(1, "#4CAF50");
+        ctx3.fillStyle = radialGrad;
+        ctx3.fillRect(220, 20, 150, 60);
+        
+        // Shadow effect
+        ctx3.shadowBlur = 10;
+        ctx3.shadowColor = "rgba(0,0,0,0.5)";
+        ctx3.fillStyle = "#2196F3";
+        ctx3.fillRect(50, 110, 100, 60);
+        ctx3.shadowBlur = 0;
+        
+        // 4. Text and Images
+        const textCanvas = document.getElementById("textCanvas");
+        const ctx4 = textCanvas.getContext("2d");
+        
+        ctx4.font = "bold 24px Arial";
+        ctx4.fillStyle = "#333";
+        ctx4.fillText("Hello Canvas", 50, 50);
+        
+        ctx4.font = "italic 18px Courier";
+        ctx4.fillStyle = "#FF5722";
+        ctx4.fillText("Styling text", 50, 90);
+        
+        ctx4.strokeStyle = "#2196F3";
+        ctx4.lineWidth = 1;
+        ctx4.strokeText("Outlined text", 50, 130);
+        
+        ctx4.font = "14px Arial";
+        ctx4.fillStyle = "#666";
+        ctx4.fillText("Measure text length: " + ctx4.measureText("Hello").width + "px", 50, 170);
+        
+        // 5. Animation - Bouncing Ball
+        const animCanvas = document.getElementById("animationCanvas");
+        const animCtx = animCanvas.getContext("2d");
+        let x = 100, y = 50;
+        let dx = 3, dy = 2;
+        let radius = 20;
+        let animationId = null;
+        let isAnimating = false;
+        
+        function drawBall() {
+            animCtx.clearRect(0, 0, animCanvas.width, animCanvas.height);
+            
+            // Draw floor
+            animCtx.fillStyle = "#ddd";
+            animCtx.fillRect(0, 170, animCanvas.width, 30);
+            
+            // Draw ball
+            animCtx.beginPath();
+            animCtx.arc(x, y, radius, 0, Math.PI * 2);
+            animCtx.fillStyle = "#FF5722";
+            animCtx.fill();
+            animCtx.strokeStyle = "#333";
+            animCtx.stroke();
+            
+            // Update position
+            x += dx;
+            y += dy;
+            
+            // Bounce off walls
+            if (x + radius > animCanvas.width || x - radius < 0) {
+                dx = -dx;
+            }
+            if (y + radius > 170 || y - radius < 0) {
+                dy = -dy;
+            }
+        }
+        
+        function animate() {
+            if (!isAnimating) return;
+            drawBall();
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        document.getElementById("startAnimBtn").onclick = () => {
+            if (!isAnimating) {
+                isAnimating = true;
+                x = 100; y = 50;
+                dx = 3; dy = 2;
+                animate();
+            }
+        };
+        
+        document.getElementById("stopAnimBtn").onclick = () => {
+            isAnimating = false;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+            animCtx.clearRect(0, 0, animCanvas.width, animCanvas.height);
+            animCtx.fillStyle = "#ddd";
+            animCtx.fillRect(0, 170, animCanvas.width, 30);
+        };
+        
+        // 6. Interactive Drawing
+        const drawCanvas = document.getElementById("drawCanvas");
+        const drawCtx = drawCanvas.getContext("2d");
+        let isDrawing = false;
+        let lastX = 0, lastY = 0;
+        
+        drawCanvas.addEventListener("mousedown", (e) => {
+            isDrawing = true;
+            const rect = drawCanvas.getBoundingClientRect();
+            lastX = e.clientX - rect.left;
+            lastY = e.clientY - rect.top;
+            drawCtx.beginPath();
+            drawCtx.moveTo(lastX, lastY);
+        });
+        
+        drawCanvas.addEventListener("mousemove", (e) => {
+            if (!isDrawing) return;
+            const rect = drawCanvas.getBoundingClientRect();
+            const currentX = e.clientX - rect.left;
+            const currentY = e.clientY - rect.top;
+            
+            drawCtx.strokeStyle = document.getElementById("drawColor").value;
+            drawCtx.lineWidth = 5;
+            drawCtx.lineCap = "round";
+            drawCtx.lineJoin = "round";
+            
+            drawCtx.lineTo(currentX, currentY);
+            drawCtx.stroke();
+            drawCtx.beginPath();
+            drawCtx.moveTo(currentX, currentY);
+        });
+        
+        drawCanvas.addEventListener("mouseup", () => {
+            isDrawing = false;
+        });
+        
+        drawCanvas.addEventListener("mouseleave", () => {
+            isDrawing = false;
+        });
+        
+        document.getElementById("clearDrawBtn").onclick = () => {
+            drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+        };
+        
+        console.log("Day 38 ready - canvas demos loaded");
+    </script>
+</body>
+</html>
