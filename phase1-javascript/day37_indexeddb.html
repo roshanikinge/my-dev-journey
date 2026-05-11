@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Day 37: IndexedDB</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 800px; margin: 0 auto; }
+        button { margin: 5px; padding: 8px 12px; cursor: pointer; }
+        input, textarea { margin: 5px; padding: 5px; width: 200px; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+        .section { border: 1px solid #ccc; margin: 10px 0; padding: 10px; border-radius: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background: #f0f0f0; }
+    </style>
+</head>
+<body>
+    <h1>IndexedDB Demo - Student Database</h1>
+
+    <div class="section">
+        <h3>Add Student</h3>
+        <input type="text" id="studentId" placeholder="ID (number)" value="1">
+        <input type="text" id="studentName" placeholder="Name" value="John Doe">
+        <input type="number" id="studentAge" placeholder="Age" value="20">
+        <input type="text" id="studentCourse" placeholder="Course" value="Computer Science">
+        <button id="addBtn">Add Student</button>
+    </div>
+
+    <div class="section">
+        <h3>Get Student by ID</h3>
+        <input type="number" id="getId" placeholder="Student ID">
+        <button id="getBtn">Get Student</button>
+        <pre id="getResult"></pre>
+    </div>
+
+    <div class="section">
+        <h3>Get All Students</h3>
+        <button id="getAllBtn">Get All Students</button>
+        <button id="clearTableBtn">Clear Display</button>
+        <div id="allStudents"></div>
+    </div>
+
+    <div class="section">
+        <h3>Update Student</h3>
+        <input type="number" id="updateId" placeholder="Student ID">
+        <input type="text" id="updateName" placeholder="New Name">
+        <input type="number" id="updateAge" placeholder="New Age">
+        <button id="updateBtn">Update Student</button>
+    </div>
+
+    <div class="section">
+        <h3>Delete Student</h3>
+        <input type="number" id="deleteId" placeholder="Student ID">
+        <button id="deleteBtn">Delete Student</button>
+    </div>
+
+    <script>
+        // Day 37: IndexedDB - Client-side database
+
+        let db = null;
+        const DB_NAME = "StudentDB";
+        const DB_VERSION = 1;
+        const STORE_NAME = "students";
+
+        function openDatabase() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                
+                request.onerror = (event) => {
+                    console.error("Database error:", event.target.error);
+                    reject("Database error: " + event.target.error);
+                };
+                
+                request.onsuccess = (event) => {
+                    db = event.target.result;
+                    console.log("Database opened successfully");
+                    resolve(db);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    db = event.target.result;
+                    console.log("Upgrading database...");
+                    
+                    if (!db.objectStoreNames.contains(STORE_NAME)) {
+                        const objectStore = db.createObjectStore(STORE_NAME, { keyPath: "id" });
+                        objectStore.createIndex("name", "name", { unique: false });
+                        objectStore.createIndex("age", "age", { unique: false });
+                        console.log("Object store created");
+                    }
+                };
+            });
+        }
+
+        function addStudent(student) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], "readwrite");
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.add(student);
+                
+                request.onsuccess = () => {
+                    console.log("Student added:", student);
+                    resolve(student);
+                };
+                
+                request.onerror = (event) => {
+                    console.error("Add error:", event.target.error);
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        function getStudent(id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], "readonly");
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.get(parseInt(id));
+                
+                request.onsuccess = () => {
+                    resolve(request.result);
+                };
+                
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        function getAllStudents() {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], "readonly");
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.getAll();
+                
+                request.onsuccess = () => {
+                    resolve(request.result);
+                };
+                
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        function updateStudent(student) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], "readwrite");
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.put(student);
+                
+                request.onsuccess = () => {
+                    console.log("Student updated:", student);
+                    resolve(student);
+                };
+                
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        function deleteStudent(id) {
+            return new Promise((resolve, reject) => {
+                const transaction = db.transaction([STORE_NAME], "readwrite");
+                const store = transaction.objectStore(STORE_NAME);
+                const request = store.delete(parseInt(id));
+                
+                request.onsuccess = () => {
+                    console.log("Student deleted:", id);
+                    resolve(id);
+                };
+                
+                request.onerror = (event) => {
+                    reject(event.target.error);
+                };
+            });
+        }
+
+        function displayAllStudents() {
+            getAllStudents().then(students => {
+                const container = document.getElementById("allStudents");
+                if (!students || students.length === 0) {
+                    container.innerHTML = "<p>No students found</p>";
+                    return;
+                }
+                
+                let html = '<table><tr><th>ID</th><th>Name</th><th>Age</th><th>Course</th></tr>';
+                for (let student of students) {
+                    html += `<tr>
+                        <td>${student.id}</td>
+                        <td>${student.name}</td>
+                        <td>${student.age}</td>
+                        <td>${student.course}</td>
+                    </tr>`;
+                }
+                html += '</table>';
+                container.innerHTML = html;
+            }).catch(err => {
+                console.error("Display error:", err);
+                document.getElementById("allStudents").innerHTML = "<p>Error loading students</p>";
+            });
+        }
+
+        // Initialize database
+        openDatabase().then(() => {
+            console.log("Ready to use IndexedDB");
+            displayAllStudents();
+        }).catch(err => {
+            console.error("Init error:", err);
+            alert("Failed to open database: " + err);
+        });
+
+        // Event listeners
+        document.getElementById("addBtn").onclick = () => {
+            const id = parseInt(document.getElementById("studentId").value);
+            const name = document.getElementById("studentName").value;
+            const age = parseInt(document.getElementById("studentAge").value);
+            const course = document.getElementById("studentCourse").value;
+            
+            if (!id || !name || !age || !course) {
+                alert("Please fill all fields");
+                return;
+            }
+            
+            const student = { id, name, age, course };
+            addStudent(student).then(() => {
+                alert("Student added successfully");
+                displayAllStudents();
+                document.getElementById("studentId").value = "";
+                document.getElementById("studentName").value = "";
+                document.getElementById("studentAge").value = "";
+                document.getElementById("studentCourse").value = "";
+            }).catch(err => {
+                alert("Error adding student: " + (err.message || err));
+            });
+        };
+        
+        document.getElementById("getBtn").onclick = () => {
+            const id = document.getElementById("getId").value;
+            if (!id) {
+                alert("Enter student ID");
+                return;
+            }
+            
+            getStudent(id).then(student => {
+                if (student) {
+                    document.getElementById("getResult").innerText = JSON.stringify(student, null, 2);
+                } else {
+                    document.getElementById("getResult").innerText = "Student not found";
+                }
+            }).catch(err => {
+                document.getElementById("getResult").innerText = "Error: " + err;
+            });
+        };
+        
+        document.getElementById("getAllBtn").onclick = () => {
+            displayAllStudents();
+        };
+        
+        document.getElementById("clearTableBtn").onclick = () => {
+            document.getElementById("allStudents").innerHTML = "";
+        };
+        
+        document.getElementById("updateBtn").onclick = () => {
+            const id = parseInt(document.getElementById("updateId").value);
+            const name = document.getElementById("updateName").value;
+            const age = parseInt(document.getElementById("updateAge").value);
+            
+            if (!id) {
+                alert("Enter student ID to update");
+                return;
+            }
+            
+            getStudent(id).then(existing => {
+                if (!existing) {
+                    alert("Student not found");
+                    return;
+                }
+                
+                const updated = {
+                    id: id,
+                    name: name || existing.name,
+                    age: age || existing.age,
+                    course: existing.course
+                };
+                
+                return updateStudent(updated);
+            }).then(() => {
+                alert("Student updated");
+                displayAllStudents();
+                document.getElementById("updateId").value = "";
+                document.getElementById("updateName").value = "";
+                document.getElementById("updateAge").value = "";
+            }).catch(err => {
+                alert("Update error: " + err);
+            });
+        };
+        
+        document.getElementById("deleteBtn").onclick = () => {
+            const id = document.getElementById("deleteId").value;
+            if (!id) {
+                alert("Enter student ID to delete");
+                return;
+            }
+            
+            if (confirm("Delete student " + id + "?")) {
+                deleteStudent(id).then(() => {
+                    alert("Student deleted");
+                    displayAllStudents();
+                    document.getElementById("deleteId").value = "";
+                }).catch(err => {
+                    alert("Delete error: " + err);
+                });
+            }
+        };
+    </script>
+</body>
+</html>
