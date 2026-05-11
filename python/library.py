@@ -236,6 +236,79 @@ data6={
 
 var6=pd.DataFrame(data6)
 print(var6)
-print(var6.columns)
+print(var6.columns) #output Index(['emp_name', 'department', 'salary'], dtype='str')
+pd.set_option('display.max_columns', None)  #Show all columns, do not hide anything.”
 
 #end
+
+# Here are implementation questions for Row Operations in Pandas 👍
+
+# 🔹 Row Selection
+# 1.
+
+# Create a DataFrame of students and display the first row.
+
+import pandas as pd
+data7={
+    "student_name":["roshani","sunil"],
+    "age":[22,56],
+    "city":["pune","mumbai"]
+}
+
+var7=pd.DataFrame(data7)
+print(var7)
+
+print(var7.iloc[0])
+
+# 2. Display rows from index 1 to 3
+print(var7.iloc[1:4])
+
+# 3. Display last row
+print(var7.iloc[-1])
+
+# 🔹 4. Add new row
+var7.loc[len(var7)]=["pratiksha",20,"mumbai"]
+print(var7)
+
+# 5. Add multiple rows
+# new_rows=pd.DataFrame({
+#     "marks":[200,3000,3000],
+#     "salary":[700000,400000,500000000]
+# })
+# var7=pd.concat([var7,new_rows],ignore_index=True)
+# print("final\n",var7)
+
+
+new_rows = pd.DataFrame({
+    "name": ["Amit", "Neha"],
+    "marks": [90, 88]
+})
+
+df = pd.concat([df, new_rows], ignore_index=True)
+
+print(df) 
+
+# 🔹 6. Delete row with index 2
+
+# var7=var7.drop(2)
+# print(var7)
+
+# # 🔹 8. Delete multiple rows
+# # var7=var7.drop([0,2])
+# # print(var7)[var7["marks"]>80]
+
+
+# )
+# # 🔹 9. Students with marks > 80
+# print(var7[var7["marks"]>80])
+
+# 🔹 12. Sort students by marks ascending
+var7 = var7.sort_values(by="marks", ascending=True)
+
+print(var7)
+
+# 🔹 13. Sort employees salary descending
+var7= var7.sort_values(by="salary", ascending=False)
+
+print(var7)
+
