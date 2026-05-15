@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Day 40: Drag and Drop API</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 1000px; margin: 0 auto; }
+        .container { display: flex; gap: 20px; margin: 20px 0; flex-wrap: wrap; }
+        .drag-area { border: 2px dashed #ccc; padding: 20px; min-height: 200px; width: 200px; border-radius: 10px; }
+        .drop-zone { border: 2px solid #4CAF50; background: #f0f8f0; }
+        .draggable {
+            background: #2196F3;
+            color: white;
+            padding: 10px;
+            margin: 10px;
+            border-radius: 5px;
+            cursor: move;
+            text-align: center;
+        }
+        .draggable:active { cursor: grabbing; }
+        .color-box {
+            width: 80px;
+            height: 80px;
+            margin: 10px;
+            display: inline-block;
+            border-radius: 5px;
+            cursor: move;
+        }
+        .task {
+            background: #fff3e0;
+            border-left: 4px solid #FF9800;
+            margin: 10px;
+            padding: 10px;
+            cursor: move;
+        }
+        .todo-list, .done-list {
+            background: #f5f5f5;
+            min-height: 300px;
+            border-radius: 10px;
+            padding: 10px;
+            width: 250px;
+        }
+        .todo-list { border: 2px solid #FF9800; }
+        .done-list { border: 2px solid #4CAF50; }
+        h3 { margin: 0 0 10px 0; }
+        .list-container { display: flex; gap: 20px; justify-content: center; }
+    </style>
+</head>
+<body>
+    <h1>Drag and Drop API Demo</h1>
+
+    <h2>1. Simple Draggable Element</h2>
+    <div class="container">
+        <div id="drag1" class="draggable" draggable="true">Drag me!</div>
+        <div id="dropZone1" class="drag-area drop-zone">Drop Zone</div>
+    </div>
+    <p id="dropStatus"></p>
+
+    <h2>2. Drag Color Boxes</h2>
+    <div class="container">
+        <div id="redBox" class="color-box" style="background: #FF0000;" draggable="true"></div>
+        <div id="greenBox" class="color-box" style="background: #00FF00;" draggable="true"></div>
+        <div id="blueBox" class="color-box" style="background: #0000FF;" draggable="true"></div>
+        <div id="yellowBox" class="color-box" style="background: #FFFF00;" draggable="true"></div>
+        <div id="dropZone2" class="drag-area drop-zone">Drop color here</div>
+    </div>
+    <div id="colorResult"></div>
+
+    <h2>3. Todo List - Drag to Done</h2>
+    <div class="list-container">
+        <div class="todo-list">
+            <h3>TODO</h3>
+            <div class="task" draggable="true" data-task="Buy groceries">Buy groceries</div>
+            <div class="task" draggable="true" data-task="Clean room">Clean room</div>
+            <div class="task" draggable="true" data-task="Learn JavaScript">Learn JavaScript</div>
+            <div class="task" draggable="true" data-task="Exercise">Exercise</div>
+        </div>
+        <div class="done-list" id="doneList">
+            <h3>DONE</h3>
+        </div>
+    </div>
+
+    <h2>4. Drag Images</h2>
+    <div class="container">
+        <img src="https://via.placeholder.com/100/FF5733/FFFFFF?text=Drag+Me" draggable="true" id="dragImage" width="100" height="100">
+        <div id="dropZone3" class="drag-area drop-zone">Drop image here</div>
+    </div>
+
+    <h2>5. File Drag and Drop</h2>
+    <div id="fileDropZone" class="drag-area" style="min-height: 150px; text-align: center; line-height: 150px;">
+        Drag and drop files here
+    </div>
+    <div id="fileList"></div>
+
+    <script>
+        // Day 40: Drag and Drop API
+
+        // 1. Simple drag and drop
+        const drag1 = document.getElementById("drag1");
+        const dropZone1 = document.getElementById("dropZone1");
+        const dropStatus = document.getElementById("dropStatus");
+
+        drag1.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("text/plain", "Dragged element");
+            e.dataTransfer.effectAllowed = "copy";
+            drag1.style.opacity = "0.5";
+        });
+
+        drag1.addEventListener("dragend", () => {
+            drag1.style.opacity = "1";
+        });
+
+        dropZone1.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZone1.style.background = "#e8f5e9";
+        });
+
+        dropZone1.addEventListener("dragleave", () => {
+            dropZone1.style.background = "#f0f8f0";
+        });
+
+        dropZone1.addEventListener("drop", (e) => {
+            e.preventDefault();
+            const data = e.dataTransfer.getData("text/plain");
+            dropStatus.innerHTML = `Dropped: ${data}`;
+            dropZone1.style.background = "#f0f8f0";
+        });
+
+        // 2. Drag color boxes
+        const dropZone2 = document.getElementById("dropZone2");
+        const colorResult = document.getElementById("colorResult");
+
+        const redBox = document.getElementById("redBox");
+        const greenBox = document.getElementById("greenBox");
+        const blueBox = document.getElementById("blueBox");
+        const yellowBox = document.getElementById("yellowBox");
+
+        function handleColorDragStart(e, color) {
+            e.dataTransfer.setData("color", color);
+            e.dataTransfer.effectAllowed = "copy";
+        }
+
+        redBox.addEventListener("dragstart", (e) => handleColorDragStart(e, "red"));
+        greenBox.addEventListener("dragstart", (e) => handleColorDragStart(e, "green"));
+        blueBox.addEventListener("dragstart", (e) => handleColorDragStart(e, "blue"));
+        yellowBox.addEventListener("dragstart", (e) => handleColorDragStart(e, "yellow"));
+
+        dropZone2.addEventListener("dragover", (e) => e.preventDefault());
+        dropZone2.addEventListener("drop", (e) => {
+            e.preventDefault();
+            const color = e.dataTransfer.getData("color");
+            colorResult.innerHTML = `<p>Dropped color: <span style="color:${color}">${color}</span></p>`;
+            dropZone2.style.background = color;
+        });
+
+        // 3. Todo list drag and drop
+        const tasks = document.querySelectorAll(".task");
+        const doneList = document.getElementById("doneList");
+
+        tasks.forEach(task => {
+            task.addEventListener("dragstart", (e) => {
+                e.dataTransfer.setData("text/plain", task.getAttribute("data-task"));
+                e.dataTransfer.setData("taskElement", task.outerHTML);
+            });
+        });
+
+        doneList.addEventListener("dragover", (e) => e.preventDefault());
+        doneList.addEventListener("drop", (e) => {
+            e.preventDefault();
+            const taskText = e.dataTransfer.getData("text/plain");
+            const newTask = document.createElement("div");
+            newTask.className = "task";
+            newTask.textContent = taskText;
+            newTask.style.background = "#d4edda";
+            newTask.style.borderLeftColor = "#28a745";
+            doneList.appendChild(newTask);
+        });
+
+        // 4. Drag images
+        const dragImage = document.getElementById("dragImage");
+        const dropZone3 = document.getElementById("dropZone3");
+
+        dragImage.addEventListener("dragstart", (e) => {
+            e.dataTransfer.setData("text/uri-list", dragImage.src);
+            e.dataTransfer.setData("text/plain", dragImage.src);
+        });
+
+        dropZone3.addEventListener("dragover", (e) => e.preventDefault());
+        dropZone3.addEventListener("drop", (e) => {
+            e.preventDefault();
+            const imgSrc = e.dataTransfer.getData("text/uri-list");
+            const img = document.createElement("img");
+            img.src = imgSrc;
+            img.width = 100;
+            img.height = 100;
+            dropZone3.innerHTML = "";
+            dropZone3.appendChild(img);
+        });
+
+        // 5. File drag and drop
+        const fileDropZone = document.getElementById("fileDropZone");
+        const fileList = document.getElementById("fileList");
+
+        fileDropZone.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            fileDropZone.style.background = "#e8f5e9";
+        });
+
+        fileDropZone.addEventListener("dragleave", () => {
+            fileDropZone.style.background = "";
+        });
+
+        fileDropZone.addEventListener("drop", (e) => {
+            e.preventDefault();
+            fileDropZone.style.background = "";
+            const files = e.dataTransfer.files;
+            fileList.innerHTML = "<h4>Dropped files:</h4>";
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const fileInfo = document.createElement("div");
+                fileInfo.innerHTML = `Name: ${file.name}, Size: ${(file.size / 1024).toFixed(2)} KB, Type: ${file.type || "unknown"}`;
+                fileList.appendChild(fileInfo);
+            }
+        });
+
+        // Prevent default for body to allow drops
+        document.body.addEventListener("dragover", (e) => e.preventDefault());
+        document.body.addEventListener("drop", (e) => e.preventDefault());
+    </script>
+</body>
+</html>
