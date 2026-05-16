@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Day 41: Web Storage API (Advanced)</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 800px; margin: 0 auto; }
+        button { margin: 5px; padding: 8px 12px; cursor: pointer; }
+        input, textarea { margin: 5px; padding: 5px; width: 200px; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+        .section { border: 1px solid #ccc; margin: 15px 0; padding: 15px; border-radius: 5px; }
+        .event-log { background: #e3f2fd; max-height: 200px; overflow-y: auto; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <h1>Web Storage API Advanced Demo</h1>
+
+    <div class="section">
+        <h3>localStorage (persistent, 5-10MB limit)</h3>
+        <input type="text" id="localKey" placeholder="Key" value="username">
+        <input type="text" id="localValue" placeholder="Value">
+        <button id="saveLocal">Save to localStorage</button>
+        <button id="getLocal">Get Value</button>
+        <button id="removeLocal">Remove Key</button>
+        <button id="clearLocal">Clear All localStorage</button>
+        <pre id="localDisplay"></pre>
+    </div>
+
+    <div class="section">
+        <h3>sessionStorage (tab session only, clears when tab closes)</h3>
+        <input type="text" id="sessionKey" placeholder="Key" value="theme">
+        <input type="text" id="sessionValue" placeholder="Value">
+        <button id="saveSession">Save to sessionStorage</button>
+        <button id="getSession">Get Value</button>
+        <button id="removeSession">Remove Key</button>
+        <button id="clearSession">Clear All sessionStorage</button>
+        <pre id="sessionDisplay"></pre>
+    </div>
+
+    <div class="section">
+        <h3>Store Complex Data (Objects/Arrays)</h3>
+        <button id="saveObject">Save User Object</button>
+        <button id="saveArray">Save Array</button>
+        <button id="getObject">Get User Object</button>
+        <button id="getArray">Get Array</button>
+        <pre id="complexDisplay"></pre>
+    </div>
+
+    <div class="section">
+        <h3>Storage Event (Cross-tab Communication)</h3>
+        <p>Open this page in another tab. Changes in one tab will appear below.</p>
+        <button id="testStorageEvent">Trigger Storage Event</button>
+        <div class="event-log" id="storageEventLog">
+            Storage events will appear here...
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>Storage Usage Info</h3>
+        <button id="getUsageBtn">Show Storage Usage</button>
+        <pre id="usageDisplay"></pre>
+    </div>
+
+    <script>
+        // Day 41: Web Storage API Advanced
+
+        function updateLocalDisplay() {
+            let output = "localStorage contents:\n";
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                output += `${key}: ${value}\n`;
+            }
+            document.getElementById("localDisplay").innerText = output || "(empty)";
+        }
+
+        function updateSessionDisplay() {
+            let output = "sessionStorage contents:\n";
+            for (let i = 0; i < sessionStorage.length; i++) {
+                const key = sessionStorage.key(i);
+                const value = sessionStorage.getItem(key);
+                output += `${key}: ${value}\n`;
+            }
+            document.getElementById("sessionDisplay").innerText = output || "(empty)";
+        }
+
+        // localStorage actions
+        document.getElementById("saveLocal").onclick = () => {
+            const key = document.getElementById("localKey").value;
+            const value = document.getElementById("localValue").value;
+            if (key) {
+                localStorage.setItem(key, value);
+                updateLocalDisplay();
+                logEvent("localStorage", `Saved ${key}=${value}`);
+            }
+        };
+
+        document.getElementById("getLocal").onclick = () => {
+            const key = document.getElementById("localKey").value;
+            const value = localStorage.getItem(key);
+            alert(value !== null ? `${key} = ${value}` : `Key "${key}" not found`);
+        };
+
+        document.getElementById("removeLocal").onclick = () => {
+            const key = document.getElementById("localKey").value;
+            localStorage.removeItem(key);
+            updateLocalDisplay();
+            logEvent("localStorage", `Removed ${key}`);
+        };
+
+        document.getElementById("clearLocal").onclick = () => {
+            localStorage.clear();
+            updateLocalDisplay();
+            logEvent("localStorage", "Cleared all");
+        };
+
+        // sessionStorage actions
+        document.getElementById("saveSession").onclick = () => {
+            const key = document.getElementById("sessionKey").value;
+            const value = document.getElementById("sessionValue").value;
+            if (key) {
+                sessionStorage.setItem(key, value);
+                updateSessionDisplay();
+                logEvent("sessionStorage", `Saved ${key}=${value}`);
+            }
+        };
+
+        document.getElementById("getSession").onclick = () => {
+            const key = document.getElementById("sessionKey").value;
+            const value = sessionStorage.getItem(key);
+            alert(value !== null ? `${key} = ${value}` : `Key "${key}" not found`);
+        };
+
+        document.getElementById("removeSession").onclick = () => {
+            const key = document.getElementById("sessionKey").value;
+            sessionStorage.removeItem(key);
+            updateSessionDisplay();
+            logEvent("sessionStorage", `Removed ${key}`);
+        };
+
+        document.getElementById("clearSession").onclick = () => {
+            sessionStorage.clear();
+            updateSessionDisplay();
+            logEvent("sessionStorage", "Cleared all");
+        };
+
+        // Complex data (objects and arrays)
+        document.getElementById("saveObject").onclick = () => {
+            const user = {
+                name: "John Doe",
+                age: 30,
+                email: "john@example.com",
+                preferences: { theme: "dark", notifications: true }
+            };
+            localStorage.setItem("user", JSON.stringify(user));
+            logEvent("complex", "Saved user object");
+            alert("User object saved to localStorage");
+        };
+
+        document.getElementById("saveArray").onclick = () => {
+            const colors = ["red", "green", "blue", "yellow"];
+            localStorage.setItem("colors", JSON.stringify(colors));
+            logEvent("complex", "Saved colors array");
+            alert("Colors array saved to localStorage");
+        };
+
+        document.getElementById("getObject").onclick = () => {
+            const userStr = localStorage.getItem("user");
+            if (userStr) {
+                const user = JSON.parse(userStr);
+                document.getElementById("complexDisplay").innerText = JSON.stringify(user, null, 2);
+            } else {
+                document.getElementById("complexDisplay").innerText = "No user object found. Click 'Save User Object' first.";
+            }
+        };
+
+        document.getElementById("getArray").onclick = () => {
+            const colorsStr = localStorage.getItem("colors");
+            if (colorsStr) {
+                const colors = JSON.parse(colorsStr);
+                document.getElementById("complexDisplay").innerText = JSON.stringify(colors, null, 2);
+            } else {
+                document.getElementById("complexDisplay").innerText = "No colors array found. Click 'Save Array' first.";
+            }
+        };
+
+        // Storage Event (cross-tab communication)
+        function logEvent(type, message) {
+            const logDiv = document.getElementById("storageEventLog");
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = `[${timestamp}] ${type}: ${message}\n`;
+            logDiv.innerHTML += logEntry;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        window.addEventListener("storage", (event) => {
+            logEvent(
+                "STORAGE EVENT",
+                `Key: ${event.key}, Old: ${event.oldValue}, New: ${event.newValue}, URL: ${event.url}`
+            );
+            updateLocalDisplay();
+            updateSessionDisplay();
+        });
+
+        document.getElementById("testStorageEvent").onclick = () => {
+            const testKey = "test_" + Date.now();
+            localStorage.setItem(testKey, "test value");
+            setTimeout(() => localStorage.removeItem(testKey), 1000);
+            logEvent("test", "Triggered storage event (check other tabs)");
+        };
+
+        // Storage usage info
+        document.getElementById("getUsageBtn").onclick = () => {
+            let totalSize = 0;
+            let output = "Storage usage:\n";
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                const value = localStorage.getItem(key);
+                const size = (key.length + value.length) * 2;
+                totalSize += size;
+                output += `${key}: ${size} bytes\n`;
+            }
+            output += `\nTotal: ${totalSize} bytes (${(totalSize / 1024).toFixed(2)} KB)`;
+            output += `\nApproximate remaining: ${(5 * 1024 * 1024 - totalSize)} bytes`;
+            document.getElementById("usageDisplay").innerText = output;
+        };
+
+        // Initialize displays
+        updateLocalDisplay();
+        updateSessionDisplay();
+        logEvent("ready", "Page loaded. Try opening another tab to test storage events.");
+    </script>
+</body>
+</html>
