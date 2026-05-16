@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Day 43: Clipboard API</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 800px; margin: 0 auto; }
+        button { margin: 5px; padding: 8px 12px; cursor: pointer; }
+        textarea, input { margin: 5px; padding: 8px; width: 100%; box-sizing: border-box; }
+        pre { background: #f4f4f4; padding: 10px; overflow-x: auto; }
+        .section { border: 1px solid #ccc; margin: 15px 0; padding: 15px; border-radius: 5px; }
+        .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+    </style>
+</head>
+<body>
+    <h1>Clipboard API Demo</h1>
+
+    <div id="message"></div>
+
+    <div class="section">
+        <h3>1. Copy Text to Clipboard</h3>
+        <textarea id="copyText" rows="3" placeholder="Type something to copy...">Hello, this is text that can be copied to clipboard!</textarea>
+        <button id="copyTextBtn">Copy Text to Clipboard</button>
+        <button id="copyFromInputBtn">Copy from Input Field</button>
+        <input type="text" id="copyInput" placeholder="Type here and copy" value="Sample text">
+    </div>
+
+    <div class="section">
+        <h3>2. Paste Text from Clipboard</h3>
+        <textarea id="pasteArea" rows="3" placeholder="Click 'Paste' button to paste clipboard content here"></textarea>
+        <button id="pasteTextBtn">Paste Text</button>
+        <button id="readClipboardBtn">Read Clipboard (show in console)</button>
+    </div>
+
+    <div class="section">
+        <h3>3. Copy Multiple Items (HTML + Plain Text)</h3>
+        <div id="richContent" style="background: #e3f2fd; padding: 15px; border-radius: 5px;">
+            <strong>Rich formatted content</strong><br>
+            <span style="color: #2196F3;">This is blue text</span><br>
+            <span style="color: #4CAF50;">This is green text</span>
+        </div>
+        <button id="copyRichBtn">Copy as HTML + Plain Text</button>
+        <p>Try pasting into a rich text editor (like Gmail or Word)</p>
+    </div>
+
+    <div class="section">
+        <h3>4. Copy Image to Clipboard</h3>
+        <canvas id="sampleCanvas" width="200" height="100" style="border:1px solid #ccc"></canvas>
+        <button id="copyCanvasBtn">Copy Canvas as Image</button>
+        <button id="copyImageBtn">Copy Sample Image</button>
+        <img id="sampleImg" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Crect width='100' height='100' fill='%23FF5722'/%3E%3Ctext x='20' y='55' fill='white' font-size='14'%3ESample%3C/text%3E%3C/svg%3E" style="display:none">
+    </div>
+
+    <div class="section">
+        <h3>5. Copy on Click (Any Element)</h3>
+        <div id="copyableDiv" style="background: #fff3e0; padding: 15px; border-radius: 5px; cursor: pointer;">
+            Click this div to copy its text
+        </div>
+        <button id="copyUrlBtn">Copy Current URL</button>
+    </div>
+
+    <div class="section">
+        <h3>6. Permission Check</h3>
+        <button id="checkPermissionBtn">Check Clipboard Permission</button>
+        <pre id="permissionStatus"></pre>
+    </div>
+
+    <script>
+        // Day 43: Clipboard API
+
+        function showMessage(text, isError = false) {
+            const msgDiv = document.getElementById("message");
+            msgDiv.innerHTML = `<div class="${isError ? 'error' : 'success'}">${text}</div>`;
+            setTimeout(() => msgDiv.innerHTML = "", 3000);
+        }
+
+        // 1. Copy text
+        async function copyText(text) {
+            try {
+                await navigator.clipboard.writeText(text);
+                showMessage(`Copied: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
+                return true;
+            } catch (err) {
+                showMessage(`Copy failed: ${err.message}`, true);
+                return false;
+            }
+        }
+
+        document.getElementById("copyTextBtn").onclick = () => {
+            const text = document.getElementById("copyText").value;
+            copyText(text);
+        };
+
+        document.getElementById("copyFromInputBtn").onclick = () => {
+            const text = document.getElementById("copyInput").value;
+            copyText(text);
+        };
+
+        // 2. Paste text
+        async function pasteText() {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById("pasteArea").value = text;
+                showMessage(`Pasted: "${text.substring(0, 50)}${text.length > 50 ? '...' : ''}"`);
+                return text;
+            } catch (err) {
+                showMessage(`Paste failed: ${err.message}`, true);
+                return null;
+            }
+        }
+
+        document.getElementById("pasteTextBtn").onclick = pasteText;
+
+        document.getElementById("readClipboardBtn").onclick = async () => {
+            const text = await pasteText();
+            if (text) console.log("Clipboard content:", text);
+        };
+
+        // 3. Copy multiple formats (HTML + text)
+        document.getElementById("copyRichBtn").onclick = async () => {
+            const htmlContent = document.getElementById("richContent").innerHTML;
+            const plainText = document.getElementById("richContent").innerText;
+            
+            const blobHtml = new Blob([htmlContent], { type: "text/html" });
+            const blobText = new Blob([plainText], { type: "text/plain" });
+            
+            try {
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        [blobHtml.type]: blobHtml,
+                        [blobText.type]: blobText
+                    })
+                ]);
+                showMessage("Rich content copied (HTML + plain text)");
+            } catch (err) {
+                showMessage(`Failed to copy rich content: ${err.message}`, true);
+            }
+        };
+
+        // 4. Copy image
+        function drawCanvas() {
+            const canvas = document.getElementById("sampleCanvas");
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#4CAF50";
+            ctx.fillRect(0, 0, 200, 100);
+            ctx.fillStyle = "white";
+            ctx.font = "16px Arial";
+            ctx.fillText("Sample Canvas", 40, 55);
+        }
+        drawCanvas();
+
+        document.getElementById("copyCanvasBtn").onclick = async () => {
+            const canvas = document.getElementById("sampleCanvas");
+            canvas.toBlob(async (blob) => {
+                try {
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            [blob.type]: blob
+                        })
+                    ]);
+                    showMessage("Canvas image copied to clipboard");
+                } catch (err) {
+                    showMessage(`Failed to copy canvas: ${err.message}`, true);
+                }
+            });
+        };
+
+        document.getElementById("copyImageBtn").onclick = async () => {
+            const img = document.getElementById("sampleImg");
+            try {
+                const response = await fetch(img.src);
+                const blob = await response.blob();
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        [blob.type]: blob
+                    })
+                ]);
+                showMessage("Image copied to clipboard");
+            } catch (err) {
+                showMessage(`Failed to copy image: ${err.message}`, true);
+            }
+        };
+
+        // 5. Copy on click
+        document.getElementById("copyableDiv").onclick = () => {
+            const text = document.getElementById("copyableDiv").innerText;
+            copyText(text);
+        };
+
+        document.getElementById("copyUrlBtn").onclick = () => {
+            copyText(window.location.href);
+        };
+
+        // 6. Permission check
+        document.getElementById("checkPermissionBtn").onclick = async () => {
+            if (!navigator.permissions) {
+                document.getElementById("permissionStatus").innerText = "Permissions API not supported";
+                return;
+            }
+            
+            try {
+                const result = await navigator.permissions.query({ name: "clipboard-write" });
+                document.getElementById("permissionStatus").innerText = `Clipboard-write permission: ${result.state}`;
+                
+                const resultRead = await navigator.permissions.query({ name: "clipboard-read" });
+                document.getElementById("permissionStatus").innerText += `\nClipboard-read permission: ${resultRead.state}`;
+            } catch (err) {
+                document.getElementById("permissionStatus").innerText = `Cannot query permission: ${err.message}`;
+            }
+        };
+
+        // Additional: Copy from any element with data-copy attribute
+        document.querySelectorAll("[data-copy]").forEach(el => {
+            el.addEventListener("click", () => copyText(el.getAttribute("data-copy")));
+        });
+    </script>
+</body>
+</html>
