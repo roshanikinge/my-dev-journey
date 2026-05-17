@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Day 44: Fullscreen API</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 800px; margin: 0 auto; }
+        button { margin: 5px; padding: 10px 15px; cursor: pointer; }
+        .section { border: 1px solid #ccc; margin: 15px 0; padding: 15px; border-radius: 5px; }
+        .fullscreen-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px;
+            text-align: center;
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .video-container {
+            background: #000;
+            text-align: center;
+            padding: 10px;
+        }
+        video {
+            width: 100%;
+            max-width: 600px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .card {
+            background: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Fullscreen API Demo</h1>
+
+    <div id="fullscreenStatus" class="section">
+        <strong>Status:</strong> Not in fullscreen
+    </div>
+
+    <div class="section">
+        <h3>1. Fullscreen Element</h3>
+        <div id="fullscreenBox" class="fullscreen-box">
+            <h2>Click to Fullscreen this Box</h2>
+            <p>This entire box will go fullscreen</p>
+        </div>
+        <button id="elementFullscreenBtn">Fullscreen Box</button>
+    </div>
+
+    <div class="section">
+        <h3>2. Fullscreen Video</h3>
+        <div class="video-container">
+            <video id="sampleVideo" controls>
+                <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+                Your browser does not support video.
+            </video>
+        </div>
+        <button id="videoFullscreenBtn">Fullscreen Video</button>
+    </div>
+
+    <div class="section">
+        <h3>3. Fullscreen Entire Page</h3>
+        <button id="pageFullscreenBtn">Fullscreen Page</button>
+        <button id="exitFullscreenBtn">Exit Fullscreen</button>
+        <button id="toggleFullscreenBtn">Toggle Fullscreen</button>
+    </div>
+
+    <div class="section">
+        <h3>4. Multiple Elements Grid</h3>
+        <div class="grid">
+            <div id="grid1" class="card" style="background:#FF5722">Card 1</div>
+            <div id="grid2" class="card" style="background:#4CAF50">Card 2</div>
+            <div id="grid3" class="card" style="background:#2196F3">Card 3</div>
+        </div>
+        <button id="grid1Btn">Fullscreen Card 1</button>
+        <button id="grid2Btn">Fullscreen Card 2</button>
+        <button id="grid3Btn">Fullscreen Card 3</button>
+    </div>
+
+    <div class="section">
+        <h3>5. Fullscreen Change Events</h3>
+        <pre id="eventLog">Fullscreen events will appear here...</pre>
+        <button id="clearEventLogBtn">Clear Event Log</button>
+    </div>
+
+    <script>
+        // Day 44: Fullscreen API
+
+        const statusDiv = document.getElementById("fullscreenStatus");
+        const eventLog = document.getElementById("eventLog");
+        let eventLogs = [];
+
+        function addEventLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            eventLogs.unshift(`[${timestamp}] ${message}`);
+            if (eventLogs.length > 10) eventLogs.pop();
+            eventLog.innerHTML = eventLogs.join("<br>");
+        }
+
+        function updateFullscreenStatus() {
+            if (document.fullscreenElement) {
+                statusDiv.innerHTML = "<strong>Status:</strong> In fullscreen mode";
+                statusDiv.style.background = "#d4edda";
+                statusDiv.style.color = "#155724";
+                addEventLog("Entered fullscreen");
+            } else {
+                statusDiv.innerHTML = "<strong>Status:</strong> Not in fullscreen";
+                statusDiv.style.background = "";
+                statusDiv.style.color = "";
+                addEventLog("Exited fullscreen");
+            }
+        }
+
+        async function enterFullscreen(element) {
+            try {
+                if (element.requestFullscreen) {
+                    await element.requestFullscreen();
+                } else if (element.webkitRequestFullscreen) {
+                    await element.webkitRequestFullscreen();
+                } else if (element.msRequestFullscreen) {
+                    await element.msRequestFullscreen();
+                } else {
+                    throw new Error("Fullscreen not supported");
+                }
+                addEventLog(`Fullscreen requested for: ${element.id || element.tagName}`);
+                return true;
+            } catch (err) {
+                addEventLog(`Fullscreen error: ${err.message}`);
+                alert(`Fullscreen failed: ${err.message}`);
+                return false;
+            }
+        }
+
+        async function exitFullscreen() {
+            try {
+                if (document.exitFullscreen) {
+                    await document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    await document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    await document.msExitFullscreen();
+                }
+                addEventLog("Exited fullscreen programmatically");
+            } catch (err) {
+                addEventLog(`Exit error: ${err.message}`);
+            }
+        }
+
+        async function toggleFullscreen(element) {
+            if (document.fullscreenElement) {
+                await exitFullscreen();
+            } else {
+                await enterFullscreen(element || document.documentElement);
+            }
+        }
+
+        // Listen for fullscreen change events
+        document.addEventListener("fullscreenchange", updateFullscreenStatus);
+        document.addEventListener("webkitfullscreenchange", updateFullscreenStatus);
+        document.addEventListener("msfullscreenchange", updateFullscreenStatus);
+
+        // 1. Element fullscreen
+        const fullscreenBox = document.getElementById("fullscreenBox");
+        fullscreenBox.onclick = () => enterFullscreen(fullscreenBox);
+        document.getElementById("elementFullscreenBtn").onclick = () => enterFullscreen(fullscreenBox);
+
+        // 2. Video fullscreen
+        const video = document.getElementById("sampleVideo");
+        document.getElementById("videoFullscreenBtn").onclick = () => enterFullscreen(video);
+
+        // 3. Page fullscreen
+        document.getElementById("pageFullscreenBtn").onclick = () => enterFullscreen(document.documentElement);
+        document.getElementById("exitFullscreenBtn").onclick = exitFullscreen;
+        document.getElementById("toggleFullscreenBtn").onclick = () => toggleFullscreen(document.documentElement);
+
+        // 4. Grid cards fullscreen
+        document.getElementById("grid1Btn").onclick = () => enterFullscreen(document.getElementById("grid1"));
+        document.getElementById("grid2Btn").onclick = () => enterFullscreen(document.getElementById("grid2"));
+        document.getElementById("grid3Btn").onclick = () => enterFullscreen(document.getElementById("grid3"));
+
+        document.getElementById("grid1").onclick = () => enterFullscreen(document.getElementById("grid1"));
+        document.getElementById("grid2").onclick = () => enterFullscreen(document.getElementById("grid2"));
+        document.getElementById("grid3").onclick = () => enterFullscreen(document.getElementById("grid3"));
+
+        // 5. Clear event log
+        document.getElementById("clearEventLogBtn").onclick = () => {
+            eventLogs = [];
+            eventLog.innerHTML = "Event log cleared";
+            addEventLog("Log cleared");
+        };
+
+        // Check if fullscreen is supported
+        if (!document.fullscreenEnabled && !document.webkitFullscreenEnabled) {
+            addEventLog("WARNING: Fullscreen API not fully supported in this browser");
+        } else {
+            addEventLog("Fullscreen API supported");
+        }
+    </script>
+</body>
+</html>
