@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Day 45: Screen Orientation API</title>
+    <style>
+        body { font-family: Arial; padding: 20px; max-width: 800px; margin: 0 auto; }
+        button { margin: 5px; padding: 10px 15px; cursor: pointer; }
+        .section { border: 1px solid #ccc; margin: 15px 0; padding: 15px; border-radius: 5px; }
+        .orientation-box {
+            background: #2196F3;
+            color: white;
+            padding: 40px;
+            text-align: center;
+            border-radius: 10px;
+            transition: all 0.3s;
+        }
+        .portrait { background: #4CAF50; }
+        .landscape { background: #FF5722; }
+        .info-card {
+            background: #f4f4f4;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <h1>Screen Orientation API Demo</h1>
+
+    <div id="orientationStatus" class="section info-card">
+        <strong>Orientation Info:</strong> Loading...
+    </div>
+
+    <div class="section">
+        <h3>1. Live Orientation Display</h3>
+        <div id="orientationBox" class="orientation-box">
+            <h2>Rotate your device</h2>
+            <p id="orientationText">Current orientation will appear here</p>
+            <p>Width: <span id="screenWidth"></span> | Height: <span id="screenHeight"></span></p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>2. Lock Screen Orientation</h3>
+        <button id="lockPortraitBtn">Lock to Portrait</button>
+        <button id="lockLandscapeBtn">Lock to Landscape</button>
+        <button id="lockAnyBtn">Unlock Orientation</button>
+        <p id="lockStatus"></p>
+        <p><small>Note: Orientation lock may require user gesture and may not work in all browsers</small></p>
+    </div>
+
+    <div class="section">
+        <h3>3. Orientation Change Events</h3>
+        <button id="clearOrientationLogBtn">Clear Log</button>
+        <div id="orientationLog" class="info-card" style="max-height: 200px; overflow-y: auto;">
+            Orientation change events will appear here...
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>4. Screen Details</h3>
+        <div class="info-card">
+            <strong>Screen Width:</strong> <span id="screenWidthDetail"></span>px<br>
+            <strong>Screen Height:</strong> <span id="screenHeightDetail"></span>px<br>
+            <strong>Available Width:</strong> <span id="availWidth"></span>px<br>
+            <strong>Available Height:</strong> <span id="availHeight"></span>px<br>
+            <strong>Color Depth:</strong> <span id="colorDepth"></span> bits<br>
+            <strong>Pixel Depth:</strong> <span id="pixelDepth"></span> bits<br>
+            <strong>Device Pixel Ratio:</strong> <span id="devicePixelRatio"></span>
+        </div>
+        <button id="refreshScreenInfoBtn">Refresh Screen Info</button>
+    </div>
+
+    <div class="section">
+        <h3>5. Media Query Examples</h3>
+        <div id="mediaStatus" class="info-card">
+            Checking orientation via CSS media queries...
+        </div>
+    </div>
+
+    <script>
+        // Day 45: Screen Orientation API
+
+        let orientationLogs = [];
+
+        function addOrientationLog(message) {
+            const timestamp = new Date().toLocaleTimeString();
+            orientationLogs.unshift(`[${timestamp}] ${message}`);
+            if (orientationLogs.length > 15) orientationLogs.pop();
+            const logDiv = document.getElementById("orientationLog");
+            logDiv.innerHTML = orientationLogs.join("<br>");
+        }
+
+        function getOrientationType() {
+            if (screen.orientation) {
+                return screen.orientation.type;
+            } else if (window.orientation !== undefined) {
+                return window.orientation === 0 ? "portrait-primary" : "landscape-primary";
+            }
+            return window.innerHeight > window.innerWidth ? "portrait" : "landscape";
+        }
+
+        function getOrientationAngle() {
+            if (screen.orientation) {
+                return screen.orientation.angle;
+            } else if (window.orientation !== undefined) {
+                return window.orientation;
+            }
+            return 0;
+        }
+
+        function updateOrientationDisplay() {
+            const orientationType = getOrientationType();
+            const angle = getOrientationAngle();
+            const isPortrait = orientationType.includes("portrait");
+            
+            document.getElementById("orientationStatus").innerHTML = `
+                <strong>Orientation Type:</strong> ${orientationType}<br>
+                <strong>Angle:</strong> ${angle} degrees<br>
+                <strong>Screen Size:</strong> ${window.screen.width} x ${window.screen.height}<br>
+                <strong>Window Size:</strong> ${window.innerWidth} x ${window.innerHeight}
+            `;
+            
+            document.getElementById("orientationText").innerHTML = `
+                Orientation: ${orientationType}<br>
+                Angle: ${angle}°<br>
+                Window: ${window.innerWidth} x ${window.innerHeight}
+            `;
+            
+            const box = document.getElementById("orientationBox");
+            if (isPortrait) {
+                box.className = "orientation-box portrait";
+            } else {
+                box.className = "orientation-box landscape";
+            }
+            
+            document.getElementById("screenWidth").innerText = window.innerWidth;
+            document.getElementById("screenHeight").innerText = window.innerHeight;
+            
+            addOrientationLog(`Orientation changed: ${orientationType} (${angle}°)`);
+        }
+
+        function updateScreenInfo() {
+            document.getElementById("screenWidthDetail").innerText = screen.width;
+            document.getElementById("screenHeightDetail").innerText = screen.height;
+            document.getElementById("availWidth").innerText = screen.availWidth;
+            document.getElementById("availHeight").innerText = screen.availHeight;
+            document.getElementById("colorDepth").innerText = screen.colorDepth;
+            document.getElementById("pixelDepth").innerText = screen.pixelDepth;
+            document.getElementById("devicePixelRatio").innerText = window.devicePixelRatio;
+        }
+
+        async function lockOrientation(orientation) {
+            if (!screen.orientation || !screen.orientation.lock) {
+                document.getElementById("lockStatus").innerHTML = "<span style='color:red'>Orientation lock not supported in this browser</span>";
+                addOrientationLog("Lock failed: API not supported");
+                return;
+            }
+            
+            try {
+                await screen.orientation.lock(orientation);
+                document.getElementById("lockStatus").innerHTML = `<span style='color:green'>Locked to ${orientation}</span>`;
+                addOrientationLog(`Locked to ${orientation}`);
+            } catch (err) {
+                document.getElementById("lockStatus").innerHTML = `<span style='color:red'>Lock failed: ${err.message}</span>`;
+                addOrientationLog(`Lock failed: ${err.message}`);
+            }
+        }
+
+        function unlockOrientation() {
+            if (screen.orientation && screen.orientation.unlock) {
+                screen.orientation.unlock();
+                document.getElementById("lockStatus").innerHTML = "<span style='color:green'>Orientation unlocked</span>";
+                addOrientationLog("Unlocked orientation");
+            } else {
+                document.getElementById("lockStatus").innerHTML = "<span style='color:red'>Unlock not supported</span>";
+            }
+        }
+
+        function updateMediaStatus() {
+            const portraitMatch = window.matchMedia("(orientation: portrait)");
+            const landscapeMatch = window.matchMedia("(orientation: landscape)");
+            
+            document.getElementById("mediaStatus").innerHTML = `
+                <strong>CSS Media Query Results:</strong><br>
+                Orientation: portrait? ${portraitMatch.matches}<br>
+                Orientation: landscape? ${landscapeMatch.matches}<br>
+                Max-width 600px: ${window.matchMedia("(max-width: 600px)").matches}<br>
+                Min-width 768px: ${window.matchMedia("(min-width: 768px)").matches}
+            `;
+        }
+
+        // Event listeners
+        window.addEventListener("resize", () => {
+            updateOrientationDisplay();
+            updateMediaStatus();
+        });
+        
+        window.addEventListener("orientationchange", () => {
+            addOrientationLog("orientationchange event fired");
+            setTimeout(() => {
+                updateOrientationDisplay();
+                updateMediaStatus();
+            }, 10);
+        });
+        
+        if (screen.orientation) {
+            screen.orientation.addEventListener("change", () => {
+                addOrientationLog("screen.orientation change event fired");
+                updateOrientationDisplay();
+                updateMediaStatus();
+            });
+        }
+
+        // Button handlers
+        document.getElementById("lockPortraitBtn").onclick = () => lockOrientation("portrait");
+        document.getElementById("lockLandscapeBtn").onclick = () => lockOrientation("landscape");
+        document.getElementById("lockAnyBtn").onclick = unlockOrientation;
+        document.getElementById("refreshScreenInfoBtn").onclick = () => {
+            updateScreenInfo();
+            addOrientationLog("Screen info refreshed");
+        };
+        document.getElementById("clearOrientationLogBtn").onclick = () => {
+            orientationLogs = [];
+            document.getElementById("orientationLog").innerHTML = "Log cleared";
+            addOrientationLog("Log cleared");
+        };
+
+        // Initialize
+        updateOrientationDisplay();
+        updateScreenInfo();
+        updateMediaStatus();
+        addOrientationLog("Page loaded - try rotating your device");
+    </script>
+</body>
+</html>
