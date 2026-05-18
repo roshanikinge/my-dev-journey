@@ -49,6 +49,5 @@ for i in s:
 print(count)
 
 
-
         
 
