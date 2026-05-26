@@ -291,6 +291,29 @@ obj12.show_son()
 #  Create a class Vehicle with attribute brand.
 # Derive a class Car with attribute model.
 # Derive a class SportsCar with attribute top_speed.
+
+
+
+class Vehicle ():
+    def __init__(self,brand):
+        self.brand=brand
+    
+class Car (Vehicle):
+    def __init__(self,model,brand):
+        self.model=model
+        super().__init__(brand)
+
+class SportCar(Car):
+    def __init__(self,top_speed,model,brand):
+        self.top_speed=top_speed
+        super().__init__(model,brand)
+
+obj27= SportCar(2000,"tvt","toto")
+print(obj27.top_speed)
+print(obj27.model)
+print(obj27.brand)
+
+
 # 
 # Create a class Person with attributes name and age.
 # Derive a class Employee with attribute salary.
@@ -1020,6 +1043,37 @@ obj26.work()
 
 # Create classes Circle and Rectangle with same method area().
 # Print area calculations.
+
+
+class Circle():
+
+    def __init__(self, r):
+        self.r = r
+
+    def area(self):
+        print("area of circle:", 3.14 * self.r * self.r)
+
+
+class Rectangle():
+
+    def __init__(self, l, b):
+        self.l = l
+        self.b = b
+
+    def area(self):
+        print("area of rectangle:", self.l * self.b)
+
+
+obj1 = Circle(3)
+obj1.area()
+
+obj2 = Rectangle(3, 4)
+obj2.area()
+
+
+
+    
+
 
 # 🔹 5. Payment System
 

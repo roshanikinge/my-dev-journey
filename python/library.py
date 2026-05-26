@@ -302,13 +302,100 @@ print(df)
 # # 🔹 9. Students with marks > 80
 # print(var7[var7["marks"]>80])
 
-# 🔹 12. Sort students by marks ascending
-var7 = var7.sort_values(by="marks", ascending=True)
+# # 🔹 12. Sort students by marks ascending
+# var7 = var7.sort_values(by="marks", ascending=True)
 
-print(var7)
+# print(var7)
 
-# 🔹 13. Sort employees salary descending
-var7= var7.sort_values(by="salary", ascending=False)
+# # 🔹 13. Sort employees salary descending
+# var7= var7.sort_values(by="salary", ascending=False)
 
-print(var7)
+# print(var7)
 
+
+
+
+# 🔥 Interview Practice Tasks
+# Add 5 student rows
+
+import pandas as  pd 
+data ={
+    "name":["rk","sk","sg"],
+    "age":[20,30,40]
+}
+
+df=pd.DataFrame(data)
+
+#single row can add this 
+df.loc[len(df)]=["rg",20]
+print(df)
+
+
+print("multiple rows add :")
+
+#multiple rows can add like this
+
+import pandas as pd 
+data= {
+    "name":["riya","siya"],
+    "age":[20,39]
+}
+
+df=pd.DataFrame(data)
+new_rows=pd.DataFrame({
+    "name":["priya","sunil","roshani","kinge"],
+    "age":[30,49,59,60]
+})
+df=pd.concat([df,new_rows],ignore_index=True)
+print(df)
+#print last row only 
+print("print last row",df.tail(3))
+#print first rows only
+print("print fisrt row:",df.head(1))
+
+
+
+# Delete last row
+print("delet last row ",df[:-1])
+
+
+
+
+# #delete first row
+df=df.drop(0)
+print(df)
+
+# Print students with marks > 75
+
+import pandas as pd
+data={
+    "name":["siya","priya"],
+    "marks":[300,400]
+}
+
+df=pd.DataFrame(data)
+print(df[df["marks"]>75])
+
+# Update student name
+
+df.loc[0,"name"]="kiyara"
+print(df)
+
+print("print only first 2 rows:")
+# Print only first 2 rows
+print(df.loc[0:1])
+
+
+# Find highest marks student
+
+print(df[df["marks"]==df["marks"].max()])
+
+# # Remove duplicate rows
+print( df.drop_duplicates())
+
+# #find duplicated
+
+print(df[df.duplicated()])
+
+# Count total rows
+print(len(df))
