@@ -315,7 +315,7 @@ print(df)
 
 
 
-# 🔥 Interview Practice Tasks
+
 # Add 5 student rows
 
 import pandas as  pd 
@@ -399,3 +399,16 @@ print(df[df.duplicated()])
 
 # Count total rows
 print(len(df))
+
+
+
+
+
+
+import pandas as pd
+import matplotlib.pyplot as plt
+
+data={
+    
+}
+
