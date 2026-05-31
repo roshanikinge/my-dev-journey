@@ -38,3 +38,20 @@ print(duplicates)
 #             
 
 # print("duplictaes:",duplicates)
+
+
+arr=[9,9,4,5,6,6]
+
+duplicates=[]
+
+for i in arr:
+   for j in range (i+1):
+    
+        if i==j:
+            duplicates.append(j)
+            break
+print(duplicates)
+
+
+
+        
