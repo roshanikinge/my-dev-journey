@@ -1,0 +1,54 @@
+When to use True and False in coding?
+ YES / NO
+ ON / OFF
+ FOUND / NOT FOUND
+ CORRECT / WRONG
+ CONDITION is satisfied or not
+ 
+ 
+1. In conditions (if-else)
+ age = 18
+
+if age >= 18:
+    print("Eligible")
+
+    Here condition becomes True or False internally
+
+
+
+2. To control flags (very important)
+found = False
+
+for i in [1,2,3]:
+    if i == 2:
+        found = True
+
+print(found)
+
+ Used to track something is found or not
+
+
+
+3. In searching problems
+if target in arr:
+    print("Found")
+
+ in returns True or False
+
+
+ 4. In loops (stop/continue logic)
+running = True
+
+while running:
+    print("Hello")
+    running = False
+
+
+
+5. For marking conditions
+
+Example: Leader problem
+
+is_leader = True
+
+If condition fails:
