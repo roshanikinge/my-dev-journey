@@ -6,3 +6,4 @@ str="hello world"
 s = "hello world"
 
 print(s.replace(" ", ""))
+
