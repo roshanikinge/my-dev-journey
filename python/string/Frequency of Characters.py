@@ -11,3 +11,5 @@ for ch in str:
         frequency[ch]=1
 print(frequency)
 
+
+    

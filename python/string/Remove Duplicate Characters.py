@@ -8,3 +8,5 @@ for ch in str:
     if ch not in duplicates:
         duplicates=duplicates+ch
 print(duplicates)
+
+
