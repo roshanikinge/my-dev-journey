@@ -1,0 +1,32 @@
+Easy Rule
+
+If question asks:
+
+
+Find index
+Find position
+First occurrence
+Last occurrence
+Search and return location
+
+return i
+return -1
+
+--------------------------------------------
+if questions ask:
+Count
+Sum
+Maximum
+Minimum
+Average
+Don't use return -1.
+
+Return the actual answer:
+
+return count
+return total
+return maximum
+return minimum
+
+
+--------------------------------------------

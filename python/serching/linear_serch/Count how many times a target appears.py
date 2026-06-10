@@ -12,3 +12,5 @@ arr = [10, 20, 20, 30]
 target = 20
 
 print(count_target(arr, target))
+ 
+ 
