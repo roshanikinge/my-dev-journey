@@ -1,0 +1,153 @@
+What is Binary Search?
+
+Binary Search is a searching algorithm that repeatedly divides the search space into half.
+
+Instead of checking every element one by one (Linear Search), Binary Search eliminates half of the array in every step.
+
+Important Condition
+Array must be sorted
+
+
+Real Life Example
+
+Suppose you want to find:
+Target = 50
+Array:
+[10,20,30,40,50,60,70]
+Check middle:
+40
+Since:
+50 > 40
+Ignore left half:
+[10,20,30,40]
+Search only:
+[50,60,70]
+Again check middle:
+60
+Since:
+50 < 60
+Ignore right half.
+Search:
+[50]
+Found! 
+Why Binary Search is Fast?
+Linear Search:
+10 20 30 40 50 60 70
+May check all 7 elements.
+Time Complexity:
+O(n)
+Binary Search:
+7 → 3 → 1
+Keeps cutting in half.
+Time Complexity:
+O(log n)
+Much faster.
+
+Binary Search Logic:
+We need 3 variables:
+left = 0
+right = len(arr) - 1
+mid = (left + right) // 2
+
+Example:
+arr = [10,20,30,40,50,60,70]
+target = 50
+
+Initial:
+
+left = 0
+right = 6
+
+Middle:
+mid = (0+6)//2
+mid = 3
+arr[3] = 40
+
+Since:
+50 > 40
+
+Move left:
+
+left = mid + 1
+left = 4
+
+Now:
+
+left = 4
+right = 6
+
+Again:
+
+mid = (4+6)//2
+mid = 5
+
+arr[5] = 60
+
+Since:
+
+50 < 60
+
+Move right:
+
+right = mid - 1
+right = 4
+
+Now:
+
+left = 4
+right = 4
+
+Again:
+
+mid = (4+4)//2
+mid = 4
+arr[4] = 50
+
+Found
+
+
+easy to understand :
+
+Is middle element the answer?
+
+YES → return mid
+
+NO → decide:
+
+target > middle ?
+→ search right half
+
+target < middle ?
+→ search left half
+
+
+
+For Binary Search, remember these 3 most important formulas:
+
+1. Left Index
+left = 0
+
+Meaning:
+
+Start searching from the first element.
+
+2. Right Index
+right = len(arr) - 1
+
+Meaning:
+
+Last index of the array.
+3. Middle Index
+mid = (left + right) // 2
+
+Then Update the Search Range
+
+If:
+arr[mid] < target
+Move right:
+left = mid + 1
+
+If:
+arr[mid] > target
+Move left:
+right = mid - 1
