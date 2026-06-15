@@ -29,3 +29,43 @@ int main(){
 		
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#include<stdio.h>
+
+//int main(){
+//
+//    int arr[] = {2,3,4,5,6,2,5};
+//    int largest = arr[0];
+//    int second = -1;
+//
+//    // Find largest
+//    for(int i = 1; i < 7; i++){
+//        if(arr[i] > largest)
+//            largest = arr[i];
+//    }
+//
+//    // Find second largest
+//    for(int i = 0; i < 7; i++){
+//        if(arr[i] != largest && arr[i] > second){
+//            second = arr[i];
+//        }
+//    }
+//
+//    printf("Second largest = %d", second);
+//
+//    return 0;
+//}

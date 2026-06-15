@@ -1,5 +1,5 @@
 #include<stdio.h>
-void main()
+int  main()
 {
 	int a ,b, choice;
 	printf("enter the value of a:");
@@ -19,22 +19,31 @@ void main()
 			printf("the sum of two no is %d\n:",a+b);
 			break;
 		case 2:
-			printf("the sub of two no is %d\n:",a-b);
+			printf("the sub of two no is %d\n",a-b);
 			break;
 		case 3:
-			printf("the mult of two no is %d:\n",a*b);
+			printf("the mult of two no is %d\n",a*b);
 			break;
 		case 4:
-			printf("the div of two no is %d:\n",a/b);
+			if (b!=0){
+			printf("the div of two no is %d\n",a/b);
+			}
+			else{
+				printf("error : division by zero is not allowed\n");
+			}
 			break;
 		case 5:
-			printf("the modulus of two no is %d:\n",a%b);
+			if (b!=0){
+			printf("the modulus of two no is %d\n",a%b);
+			}
+			else{
+				printf("error : modulus of two no is not allowed\n");
+			}
 			break;
-			
 		default:
-			printf("invalid value:\n");
+			printf("invalid value\n");
 			
 	}
 	
-	
+	return 0;
 }
