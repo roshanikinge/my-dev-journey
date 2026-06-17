@@ -8,7 +8,9 @@ int main(){
 	
 //	strcpy(str1,str2);
 //	strcat(str1,str2);
-	strrev(str1);
+//	strrev(str1);
+//	strupr()
+//	strlwr()
 	printf("%s",str1);
 //	printf("%d",strcmp(str1,str2));
 	

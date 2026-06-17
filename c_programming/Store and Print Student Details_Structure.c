@@ -1,6 +1,8 @@
 #include<stdio.h>
+#include<string.h>
 
-struct student{//structre creation
+// Defines a new custom data structure named 'student'
+struct student{//structre creation//defination
 	char name[10];
 	int roll;
 };

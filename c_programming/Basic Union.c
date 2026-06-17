@@ -15,7 +15,7 @@ int main(){
 	s.age=20;
 	
 	printf("%s",s.name);
-	
+	//show only one output who has greater memory
 	printf("%d",s.age);
 	
 	return 0;
